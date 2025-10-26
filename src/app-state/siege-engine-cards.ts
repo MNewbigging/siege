@@ -5,19 +5,19 @@ export const siegeEngineCards: ISiegeEngineCard[] = [
   {
     name: "Catapult",
     effect: "Reroll one 6",
-    healthPerRow: [14, 14, 14, 12, 10],
+    healthPerRow: [10, 12, 14, 14, 14],
     activeOnRows: [1, 2, 3],
   },
   {
     name: "Ballista",
     effect: "Forfeit one Dice and one Champion",
-    healthPerRow: [14, 14, 14, 14, 10],
+    healthPerRow: [10, 14, 14, 14, 14],
     activeOnRows: [1, 2],
   },
   {
     name: "Flaming Rain",
     effect: "Discard one Champion. Flip one Champion",
-    healthPerRow: [14, 14, 12, 14, 10],
+    healthPerRow: [10, 14, 12, 14, 14],
     activeOnRows: [1, 3, 5],
   },
   {
@@ -29,19 +29,19 @@ export const siegeEngineCards: ISiegeEngineCard[] = [
   {
     name: "Breach Tower",
     effect: "Load in one adjacent Troop card",
-    healthPerRow: [14, 14, 14, 8, 8],
+    healthPerRow: [8, 8, 14, 14, 14],
     activeOnRows: [1, 2],
   },
   {
     name: "Trebuchet",
     effect: "Add Damage to the Turret below",
-    healthPerRow: [14, 13, 14, 13, 12],
+    healthPerRow: [12, 13, 14, 13, 14],
     activeOnRows: [1, 2, 3, 4],
   },
   {
     name: "Ogre's Reach",
     effect: "Add 2 Damage to the Turret below",
-    healthPerRow: [14, 14, 14, 12, 10],
+    healthPerRow: [10, 12, 14, 14, 14],
     activeOnRows: [1, 2],
   },
   {
@@ -53,7 +53,7 @@ export const siegeEngineCards: ISiegeEngineCard[] = [
   {
     name: "Incendiaries",
     effect: "Reroll one 5",
-    healthPerRow: [14, 13, 12, 11, 10],
+    healthPerRow: [10, 11, 12, 13, 14],
     activeOnRows: [1, 2, 3, 4, 57],
   },
 ];

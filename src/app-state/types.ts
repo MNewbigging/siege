@@ -23,7 +23,7 @@ export function isTroopCard(card: any): card is ITroopCard {
 export interface ISiegeEngineCard {
   name: string;
   effect: string;
-  healthPerRow: number[]; // top-down, starts at 5 ends at 1/V
+  healthPerRow: number[]; // bottom-up, starts at 1/V and goes to 5
   activeOnRows: number[]; // V = 1
 }
 
