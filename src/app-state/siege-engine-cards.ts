@@ -1,7 +1,7 @@
-import { SiegeEngineCard } from "./types";
+import { ISiegeEngineCard } from "./types";
 
 // There are 2 of each siege engine card
-export const siegeEngineCards: SiegeEngineCard[] = [
+export const siegeEngineCards: ISiegeEngineCard[] = [
   {
     name: "Catapult",
     effect: "Reroll one 6",

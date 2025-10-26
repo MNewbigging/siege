@@ -6,8 +6,8 @@ import {
   BattlefieldCard,
   DiceValue,
   RoundStage,
-  SiegeEngineCard,
-  TroopCard,
+  ISiegeEngineCard,
+  ITroopCard,
 } from "./types";
 ("./siege-engine-cards");
 
@@ -16,9 +16,9 @@ export class GameState {
   maxRounds = 7;
   roundStage: RoundStage = RoundStage.A_RollDice;
 
-  siegeDeck: SiegeEngineCard[];
-  troopDeck: TroopCard[];
-  playerHand: TroopCard[];
+  siegeDeck: ISiegeEngineCard[];
+  troopDeck: ITroopCard[];
+  playerHand: ITroopCard[];
   battlefield: BattlefieldCard[][] = []; // by column, index 0 is front/vanguard
   activeDice: DiceValue[] = [];
   spentDice: DiceValue[] = [];
@@ -66,7 +66,7 @@ export class GameState {
 
   private makeSiegeDeck() {
     // Each card is doubled
-    const siegeDeck: SiegeEngineCard[] = [];
+    const siegeDeck: ISiegeEngineCard[] = [];
 
     siegeEngineCards.forEach((card) => {
       siegeDeck.push(card, card);
@@ -82,7 +82,7 @@ export class GameState {
   }
 
   private makeTroopDeck() {
-    const troopDeck: TroopCard[] = [];
+    const troopDeck: ITroopCard[] = [];
 
     allTroopCards.forEach((card) => {
       const count = card.type === AttackType.Strength ? 5 : 3;

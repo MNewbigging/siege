@@ -1,6 +1,15 @@
+import { ReactElement } from "react";
 import { GameState } from "../../app-state/game-state";
-import { BattlefieldCard } from "../../app-state/types";
+import {
+  BattlefieldCard,
+  isSiegeCard,
+  isTroopCard,
+  ITroopCard,
+} from "../../app-state/types";
+import { EmptyCard } from "../empty-card/empty-card";
 import { EnemyCard } from "../enemy-card/enemy-card";
+import { SiegeCard } from "../siege-card/siege-card";
+import { TroopCard } from "../troop-card/troop-card";
 import "./battlefield.scss";
 
 interface BattlefieldProps {
@@ -22,13 +31,27 @@ interface BattlefieldColumnProps {
 }
 
 function BattlefieldColumn({ column, colIdx }: BattlefieldColumnProps) {
-  // A card display for every entry in the column cards
-  const cards = column.map((card, index) => (
-    <div
-      key={`column-${colIdx}-${card?.name}-${index}`}
-      className="enemy-card-area"
-    >
-      <EnemyCard card={card} />
+  let cards: ReactElement[] = [];
+
+  // Use the correct component for each card type
+  column.forEach((card) => {
+    if (!card) {
+      cards.push(<EmptyCard />);
+    }
+
+    if (isTroopCard(card)) {
+      cards.push(<TroopCard card={card} />);
+    }
+
+    if (isSiegeCard(card)) {
+      cards.push(<SiegeCard card={card} />);
+    }
+  });
+
+  // Wrap each card in a container styled by this comp
+  cards = cards.map((cardComp, index) => (
+    <div key={`${colIdx}-${index}`} className="enemy-card-area">
+      {cardComp}
     </div>
   ));
 

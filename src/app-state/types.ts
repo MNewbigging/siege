@@ -8,23 +8,30 @@ export interface DiceValue {
   value: number;
 }
 
-export interface TroopCard {
+export interface ITroopCard {
   name: string;
   type: AttackType;
   effect: string;
-  // isSeigeTower ?
   toDefeatA: DiceValue;
   toDefeatB?: DiceValue;
 }
 
-export interface SiegeEngineCard {
+export function isTroopCard(card: any): card is ITroopCard {
+  return "toDefeatA" in card;
+}
+
+export interface ISiegeEngineCard {
   name: string;
   effect: string;
   healthPerRow: number[]; // top-down, starts at 5 ends at 1/V
   activeOnRows: number[]; // V = 1
 }
 
-export type BattlefieldCard = SiegeEngineCard | TroopCard | undefined;
+export function isSiegeCard(card: any): card is ISiegeEngineCard {
+  return "healthPerRow" in card;
+}
+
+export type BattlefieldCard = ISiegeEngineCard | ITroopCard | undefined;
 
 export enum RoundStage {
   A_RollDice = "Rolling dice",

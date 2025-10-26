@@ -1,0 +1,5 @@
+- different card display comps for troop and siege engine
+- how to make it responsive?
+
+Drag behaviour:
+- 'freely' anywhere onto the card

@@ -1,0 +1,13 @@
+.dice-req {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &.strength {
+        background-color: lightcoral;
+    }
+
+    &.magic {
+        background-color: cyan;
+    }
+}
