@@ -1,4 +1,7 @@
 .tower-wall {
+    padding: 0px 10px;
     flex: 0 0 200px;
-    border-top: 1px solid black;
+
+    display: flex;
+    gap: 10px;
 }

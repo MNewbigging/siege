@@ -1,0 +1,44 @@
+.tower {
+    flex: 1 1 auto;
+    border: 1px solid black;
+    border-bottom: none;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .top-area {
+        flex: 1 1 auto;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 30px;
+    }
+
+    .champion-area {
+        flex: 0 0 100px;
+        width: 60px;
+        border: 1px dashed black;
+        border-radius: 4px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .bot-area {
+        flex: 1 1 auto;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .damage-marker {
+        height: 32px;
+        width: 32px;
+        border-radius: 50%;
+        border: 1px dashed black;
+    }
+}
