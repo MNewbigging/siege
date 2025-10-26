@@ -3,39 +3,50 @@ import { allTroopCards } from "./troop-cards";
 import {
   AttackType,
   BattlefieldCard,
+  DiceValue,
+  RoundStage,
   SiegeEngineCard,
   TroopCard,
 } from "./types";
 ("./siege-engine-cards");
 
 export class GameState {
+  currentRound = 1;
+  maxRounds = 7;
+  roundStage: RoundStage = RoundStage.A_RollDice;
+
   siegeDeck: SiegeEngineCard[];
   troopDeck: TroopCard[];
   playerHand: TroopCard[];
   battlefield: BattlefieldCard[][] = []; // by column, index 0 is front/vanguard
+  activeDice: DiceValue[] = [];
+  spentDice: DiceValue[] = [];
+
+  private strengthDice: number;
+  private magicDice: number;
 
   constructor() {
+    // Setup decks
     this.siegeDeck = this.makeSiegeDeck();
     const troopDeck = this.makeTroopDeck();
     this.playerHand = troopDeck.splice(-2);
     this.troopDeck = troopDeck;
 
-    // There are 5 columns
+    // Setup battlefied - there are 5 columns
     for (let col = 0; col < 5; col++) {
       const column: BattlefieldCard[] = [];
-
       // Put 4 troops in first 4 spots
       for (let i = 0; i < 4; i++) {
         column.push(this.troopDeck.pop());
       }
-
       // Seige engine at the top in last spot
       column.push(this.siegeDeck.pop());
-
       this.battlefield.push(column);
     }
 
-    console.log("battlefield", this.battlefield);
+    // Starting dice
+    this.strengthDice = 3;
+    this.magicDice = 2;
   }
 
   private makeSiegeDeck() {

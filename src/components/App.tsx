@@ -15,7 +15,7 @@ export function App() {
     <div className="ui-root">
       <Battlefield gameState={appState.gameState} />
       <TowerWall />
-      <PlayerBar />
+      <PlayerBar gameState={appState.gameState} />
     </div>
   );
 }
