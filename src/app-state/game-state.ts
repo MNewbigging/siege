@@ -49,6 +49,10 @@ export class GameState {
     this.magicDice = 2;
   }
 
+  rollPlayerDice() {
+    //
+  }
+
   private makeSiegeDeck() {
     // Each card is doubled
     const siegeDeck: SiegeEngineCard[] = [];
