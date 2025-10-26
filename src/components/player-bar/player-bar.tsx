@@ -13,7 +13,7 @@ export function PlayerBar({ gameState }: PlayerBarProps) {
     <div className="player-bar">
       <PlayerDice gameState={gameState} />
       <PlayerInfo gameState={gameState} />
-      <PlayerHand />
+      <PlayerHand gameState={gameState} />
     </div>
   );
 }
