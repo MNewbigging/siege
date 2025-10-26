@@ -1,3 +1,4 @@
+import { eventUpdater } from "../events/event-updater";
 import { siegeEngineCards } from "./siege-engine-cards";
 import { allTroopCards } from "./troop-cards";
 import {
@@ -50,7 +51,17 @@ export class GameState {
   }
 
   rollPlayerDice() {
-    //
+    for (let i = 0; i < this.strengthDice; i++) {
+      this.activeDice.push({ type: AttackType.Strength, value: diceRoll() });
+    }
+
+    for (let i = 0; i < this.magicDice; i++) {
+      this.activeDice.push({ type: AttackType.Magic, value: diceRoll() });
+    }
+
+    this.roundStage = RoundStage.B_ResolveSiege;
+
+    eventUpdater.fire("rolled-dice");
   }
 
   private makeSiegeDeck() {
@@ -99,4 +110,8 @@ function shuffleArray(array: any[]) {
     array[i] = array[j];
     array[j] = temp;
   }
+}
+
+function diceRoll() {
+  return Math.floor(Math.random() * 6) + 1;
 }

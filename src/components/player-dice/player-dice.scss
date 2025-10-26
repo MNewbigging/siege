@@ -1,6 +1,13 @@
 .player-dice {
     flex: 1 1 100%;
     height: 100%;
+    padding-left: 10px;
+
+    // This is for individual dice
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    gap: 5px;
 }
 
 .roll-prompt {

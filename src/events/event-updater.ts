@@ -1,4 +1,4 @@
-export type GameEvent = "game-loaded" | "game-started";
+export type GameEvent = "game-started" | "rolled-dice";
 
 type EventCallback = () => void;
 
