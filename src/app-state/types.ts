@@ -23,3 +23,5 @@ export interface SiegeEngineCard {
   healthPerRow: number[]; // top-down, starts at 5 ends at 1/V
   activeOnRows: number[]; // V = 1
 }
+
+export type BattlefieldCard = SiegeEngineCard | TroopCard | undefined;

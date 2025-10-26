@@ -1,36 +1,36 @@
+import { GameState } from "../../app-state/game-state";
+import { BattlefieldCard } from "../../app-state/types";
 import { EnemyCard } from "../enemy-card/enemy-card";
 import "./battlefield.scss";
 
-export function Battlefield() {
-  return (
-    <div className="battlefield">
-      <BattlefieldColumn />
-      <BattlefieldColumn />
-      <BattlefieldColumn />
-      <BattlefieldColumn />
-      <BattlefieldColumn />
-    </div>
-  );
+interface BattlefieldProps {
+  gameState: GameState;
 }
 
-function BattlefieldColumn() {
-  return (
-    <div className="column">
-      <div className="enemy-card-area">
-        <EnemyCard />
-      </div>
-      <div className="enemy-card-area">
-        <EnemyCard />
-      </div>
-      <div className="enemy-card-area">
-        <EnemyCard />
-      </div>
-      <div className="enemy-card-area">
-        <EnemyCard />
-      </div>
-      <div className="enemy-card-area">
-        <EnemyCard />
-      </div>
+export function Battlefield({ gameState }: BattlefieldProps) {
+  // A column for every array in the battlefield
+  const columns = gameState.battlefield.map((column, index) => (
+    <BattlefieldColumn key={`column-${index}`} column={column} colIdx={index} />
+  ));
+
+  return <div className="battlefield">{columns}</div>;
+}
+
+interface BattlefieldColumnProps {
+  column: BattlefieldCard[];
+  colIdx: number;
+}
+
+function BattlefieldColumn({ column, colIdx }: BattlefieldColumnProps) {
+  // A card display for every entry in the column cards
+  const cards = column.map((card, index) => (
+    <div
+      key={`column-${colIdx}-${card?.name}-${index}`}
+      className="enemy-card-area"
+    >
+      <EnemyCard card={card} />
     </div>
-  );
+  ));
+
+  return <div className="column">{cards}</div>;
 }

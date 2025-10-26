@@ -39,12 +39,6 @@ export const siegeEngineCards: SiegeEngineCard[] = [
     activeOnRows: [1, 2, 3, 4],
   },
   {
-    name: "Spinblade",
-    effect: "Spend one Dice. Reroll one 4",
-    healthPerRow: [12, 14, 12, 12, 14],
-    activeOnRows: [2, 3, 5],
-  },
-  {
     name: "Ogre's Reach",
     effect: "Add 2 Damage to the Turret below",
     healthPerRow: [14, 14, 14, 12, 10],
