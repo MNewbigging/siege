@@ -13,7 +13,11 @@ export function SiegeCard({ card }: SiegeCardProps) {
     const activeClass = card.activeOnRows.includes(index + 1) ? "active" : "";
     const classes = ["range", activeClass].join(" ");
 
-    ranges.push(<div className={classes}>{health}</div>);
+    ranges.push(
+      <div key={`health-${index}`} className={classes}>
+        {health}
+      </div>,
+    );
   });
 
   return (
