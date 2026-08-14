@@ -61,6 +61,11 @@ export enum RoundStage {
   G_Reinforce = "Reinforcing battlefield",
 }
 
+export interface Champion {
+  name: string;
+  flipped: boolean;
+}
+
 /**
 
   GAME FLOW CONSISTS OF 7 ROUNDS OF:

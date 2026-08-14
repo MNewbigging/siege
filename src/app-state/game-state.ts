@@ -9,13 +9,20 @@ import {
   ITroopCard,
   SiegeEngineEffect,
   isSiegeCard,
+  Champion,
 } from "./types";
 import { diceRoll } from "./utils";
 ("./siege-engine-cards");
 
 interface PendingDiceSelection {
-  value: number;
   onSelect: (dice: Dice) => void;
+  type?: AttackType;
+  mustMatchValue?: number;
+}
+
+interface PendingChampionSelection {
+  canBeFlipped: boolean;
+  onSelect: (champion: Champion) => void;
 }
 
 export class GameState {
@@ -25,18 +32,22 @@ export class GameState {
 
   siegeDeck: SiegeEngineCard[];
   troopDeck: ITroopCard[];
+  championDrawDeck: Champion[] = [];
+  championDiscardDeck: Champion[] = [];
   playerHand: ITroopCard[];
   battlefield: BattlefieldCard[][] = []; // by column, index 0 is front/vanguard
   activeDice: Dice[] = [];
   spentDice: Dice[] = [];
+  activeChampions: Champion[] = [];
 
   // Transient
   siegeEnginesToResolve: SiegeEngineCard[] = [];
   currentlyResolvingSiegeEngine?: SiegeEngineCard;
   pendingDiceSelection?: PendingDiceSelection;
+  pendingChampionSelection?: PendingChampionSelection;
 
   private strengthDice: number;
-  private magicDice: number;
+  private holyDice: number;
 
   constructor() {
     // Setup
@@ -48,7 +59,7 @@ export class GameState {
     this.battlefield = this.setupBattlefield();
 
     this.strengthDice = 3;
-    this.magicDice = 2;
+    this.holyDice = 2;
   }
 
   rollPlayerDice() {
@@ -56,10 +67,10 @@ export class GameState {
       this.activeDice.push({ type: AttackType.Strength, value: diceRoll() });
     }
 
-    // Testing incendiaries
-    this.activeDice[0].value = 5;
+    // Testing
+    this.activeDice[0].value = 4;
 
-    for (let i = 0; i < this.magicDice; i++) {
+    for (let i = 0; i < this.holyDice; i++) {
       this.activeDice.push({ type: AttackType.Holy, value: diceRoll() });
     }
 
@@ -82,26 +93,55 @@ export class GameState {
     // Then being to resolve the siege card
     switch (siegeCard.effect) {
       case SiegeEngineEffect.Ballista:
+        this.setupDiceForfeitRequest(() => {
+          this.setupChampionDiscardRequest(this.finishResolveSiegeEngine);
+        });
         break;
       case SiegeEngineEffect.BatteringRam:
+        // Lowers each strength dice by 1
+        this.activeDice.forEach((dice) => {
+          if (dice.type === AttackType.Strength && dice.value > 1) dice.value--;
+        });
+        eventUpdater.fire("dice-update");
+        this.finishResolveSiegeEngine();
         break;
       case SiegeEngineEffect.BreachTower:
+        // todo
         break;
       case SiegeEngineEffect.Catapult:
-        this.setupRerollRequest(6, this.finishResolveSiegeEngine);
+        this.setupDiceRerollRequest(6, this.finishResolveSiegeEngine);
         break;
       case SiegeEngineEffect.FlamingRain:
+        this.setupChampionDiscardRequest(() => {
+          this.setupChampionFlipRequest(this.finishResolveSiegeEngine);
+        });
         break;
       case SiegeEngineEffect.GargansEye:
+        this.setupDiceSpendRequest({
+          type: AttackType.Strength,
+          onComplete: () => {
+            this.setupDiceSpendRequest({
+              type: AttackType.Holy,
+              onComplete: this.finishResolveSiegeEngine,
+            });
+          },
+        });
         break;
       case SiegeEngineEffect.Incendiaries:
-        this.setupRerollRequest(5, this.finishResolveSiegeEngine);
+        this.setupDiceRerollRequest(5, this.finishResolveSiegeEngine);
         break;
       case SiegeEngineEffect.OgresReach:
+        // todo
         break;
       case SiegeEngineEffect.Spinblade:
+        this.setupDiceSpendRequest({
+          onComplete: () => {
+            this.setupDiceRerollRequest(4, this.finishResolveSiegeEngine);
+          },
+        });
         break;
       case SiegeEngineEffect.Trebuchet:
+        // todo
         break;
       default:
         break;
@@ -184,10 +224,13 @@ export class GameState {
     return toResolve;
   }
 
-  private setupRerollRequest(toReroll: number, onComplete: () => void) {
+  private setupDiceRerollRequest(
+    valueToReroll: number,
+    onComplete: () => void,
+  ) {
     // If there's not an active dice of the given value to reroll, complete
     const hasActiveDiceOfValue = this.activeDice.some(
-      (dice) => dice.value === toReroll,
+      (dice) => dice.value === valueToReroll,
     );
     if (!hasActiveDiceOfValue) {
       onComplete();
@@ -195,16 +238,113 @@ export class GameState {
     }
 
     const onSelect = (dice: Dice) => {
-      if (dice.value !== toReroll)
+      if (dice.value !== valueToReroll)
         throw new Error("Not the requested reroll dice value");
 
       dice.value = diceRoll();
+
       eventUpdater.fire("dice-update");
       this.pendingDiceSelection = undefined;
+
       onComplete();
     };
 
-    this.pendingDiceSelection = { value: toReroll, onSelect };
+    this.pendingDiceSelection = { mustMatchValue: valueToReroll, onSelect };
     eventUpdater.fire("dice-update");
+  }
+
+  private setupDiceForfeitRequest(onComplete: () => void) {
+    // This shouldn't happen but just in case there are no dice to forfeit
+    if (!this.activeDice.length) {
+      onComplete();
+      return;
+    }
+
+    const onSelect = (dice: Dice) => {
+      // Forfeit dice are removed from the active pool
+      this.activeDice = this.activeDice.filter(
+        (activeDice) => activeDice !== dice,
+      );
+      if (dice.type === AttackType.Strength) this.strengthDice--;
+      else this.holyDice--;
+      this.pendingDiceSelection = undefined;
+      eventUpdater.fire("dice-update");
+      onComplete();
+    };
+
+    this.pendingDiceSelection = { onSelect };
+    eventUpdater.fire("dice-update");
+  }
+
+  private setupDiceSpendRequest(options: {
+    type?: AttackType;
+    onComplete: () => void;
+  }) {
+    const { type, onComplete } = options;
+
+    // If given a type, ensure there are active dice of that type
+    const eligibleDice = type
+      ? this.activeDice.filter((d) => d.type === type)
+      : this.activeDice;
+
+    if (!eligibleDice.length) {
+      onComplete();
+      return;
+    }
+
+    const onSelect = (dice: Dice) => {
+      // Move to spent pool
+      this.activeDice = this.activeDice.filter((d) => d !== dice);
+      this.spentDice.push(dice);
+
+      this.pendingDiceSelection = undefined;
+      eventUpdater.fire("dice-update");
+      onComplete();
+    };
+
+    this.pendingDiceSelection = { onSelect };
+    eventUpdater.fire("dice-update");
+  }
+
+  private setupChampionDiscardRequest(onComplete: () => void) {
+    // In case there are no champions to discard
+    if (!this.activeChampions.length) {
+      onComplete();
+      return;
+    }
+
+    const onSelect = (champion: Champion) => {
+      // Move this champion to discards
+      this.activeChampions = this.activeChampions.filter(
+        (ch) => ch !== champion,
+      );
+      this.championDiscardDeck.push(champion);
+      this.pendingChampionSelection = undefined;
+      eventUpdater.fire("champion-update");
+      onComplete();
+    };
+
+    this.pendingChampionSelection = { canBeFlipped: true, onSelect };
+    eventUpdater.fire("champion-update");
+  }
+
+  private setupChampionFlipRequest(onComplete: () => void) {
+    // If there is no champion available to flip
+    const unflippedChampions = this.activeChampions.some((ch) => !ch.flipped);
+    if (!unflippedChampions) {
+      onComplete();
+      return;
+    }
+
+    const onSelect = (champion: Champion) => {
+      // Flip this champion
+      champion.flipped = true;
+      this.pendingChampionSelection = undefined;
+      eventUpdater.fire("champion-update");
+      onComplete();
+    };
+
+    this.pendingChampionSelection = { canBeFlipped: false, onSelect };
+    eventUpdater.fire("champion-update");
   }
 }

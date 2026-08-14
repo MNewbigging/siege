@@ -9,7 +9,11 @@ interface DiceDisplayProps {
 export function DiceDisplay({ dice }: DiceDisplayProps) {
   const gameState = useGameState();
 
-  const isValidSelection = gameState.pendingDiceSelection?.value === dice.value;
+  // If there is a pending dice selection, highlight if this dice is valid for selection
+  const selection = gameState.pendingDiceSelection;
+  const isValidSelection =
+    !!selection &&
+    (!selection.mustMatchValue || selection.mustMatchValue === dice.value);
 
   function onClick() {
     if (isValidSelection) {

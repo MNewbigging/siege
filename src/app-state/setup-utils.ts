@@ -20,14 +20,14 @@ export function makeSiegeDeck() {
   shuffleArray(siegeDeck);
 
   // Testing incendiaries: reserve it before truncation
-  const incendiariesIndex = siegeDeck.findIndex(
-    (card) => card.effect === SiegeEngineEffect.Incendiaries,
+  const wantedIndeex = siegeDeck.findIndex(
+    (card) => card.effect === SiegeEngineEffect.Spinblade,
   );
-  const [incendiaries] = siegeDeck.splice(incendiariesIndex, 1);
+  const [wanted] = siegeDeck.splice(wantedIndeex, 1);
 
   // setupBattlefield draws from the end with pop()
   siegeDeck.length = 12;
-  siegeDeck.push(incendiaries);
+  siegeDeck.push(wanted);
 
   return siegeDeck;
 }
