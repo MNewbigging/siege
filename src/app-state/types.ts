@@ -3,7 +3,7 @@ export enum AttackType {
   Holy = "holy",
 }
 
-export interface DiceValue {
+export interface Dice {
   type: AttackType;
   value: number;
 }
@@ -12,8 +12,8 @@ export interface ITroopCard {
   name: string;
   type: AttackType;
   effect: string;
-  toDefeatA: DiceValue;
-  toDefeatB?: DiceValue;
+  toDefeatA: Dice;
+  toDefeatB?: Dice;
 }
 
 export function isTroopCard(card: any): card is ITroopCard {

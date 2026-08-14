@@ -4,7 +4,7 @@ import { allTroopCards } from "./troop-cards";
 import {
   AttackType,
   BattlefieldCard,
-  DiceValue,
+  Dice,
   RoundStage,
   SiegeEngineCard,
   ITroopCard,
@@ -13,6 +13,11 @@ import {
 } from "./types";
 import { diceRoll, getCountOfAttackType, shuffleArray } from "./utils";
 ("./siege-engine-cards");
+
+interface PendingDiceSelection {
+  validValues: number[];
+  onSelect: (dice: Dice) => void;
+}
 
 export class GameState {
   currentRound = 1;
@@ -23,11 +28,12 @@ export class GameState {
   troopDeck: ITroopCard[];
   playerHand: ITroopCard[];
   battlefield: BattlefieldCard[][] = []; // by column, index 0 is front/vanguard
-  activeDice: DiceValue[] = [];
-  spentDice: DiceValue[] = [];
+  activeDice: Dice[] = [];
+  spentDice: Dice[] = [];
 
-  // Stage specific
+  // Transient
   siegeEnginesToResolve: SiegeEngineCard[] = [];
+  pendingDiceSelection?: PendingDiceSelection;
 
   private strengthDice: number;
   private magicDice: number;
@@ -116,7 +122,11 @@ export class GameState {
       const count = getCountOfAttackType(card.type);
 
       for (let i = 0; i < count; i++) {
-        troopDeck.push(card);
+        troopDeck.push({
+          ...card,
+          toDefeatA: { ...card.toDefeatA },
+          toDefeatB: card.toDefeatB ? { ...card.toDefeatB } : undefined,
+        });
       }
     });
 
@@ -198,6 +208,15 @@ export class GameState {
     const sixes = this.activeDice.filter((die) => die.value === 6);
     if (!sixes.length) return true;
 
-    // Highlight 6s for player to choose
+    // The player needs to select a 6 to reroll
+    const onSelect = (dice: Dice) => {
+      // Reroll this dice
+      const newValue = diceRoll();
+      dice.value = newValue;
+      eventUpdater.fire("rolled-dice");
+      this.pendingDiceSelection = undefined;
+    };
+
+    this.pendingDiceSelection = { validValues: [6], onSelect };
   }
 }

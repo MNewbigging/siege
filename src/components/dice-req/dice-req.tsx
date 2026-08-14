@@ -1,8 +1,8 @@
-import { DiceValue } from "../../app-state/types";
+import { Dice } from "../../app-state/types";
 import "./dice-req.scss";
 
 interface DiceReqProps {
-  dice: DiceValue;
+  dice: Dice;
 }
 
 export function DiceReq({ dice }: DiceReqProps) {
