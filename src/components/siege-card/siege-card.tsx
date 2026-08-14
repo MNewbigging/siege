@@ -16,8 +16,8 @@ export function SiegeCard({ card, currentRow }: SiegeCardProps) {
   // If it's time to resolve siege cards, highlight it
   const shouldHighlight =
     gameState.roundStage === RoundStage.B_ResolveSiege &&
-    isOnActiveRow(card, currentRow + 1);
-  console.log(`${card.name} on ${currentRow + 1}: ${shouldHighlight}`);
+    isOnActiveRow(card, currentRow);
+  console.log(`${card.name} on ${currentRow}: ${shouldHighlight}`);
   const cardClasses = ["siege-card", shouldHighlight ? "highlight" : ""];
 
   // Construct the ranges block
@@ -43,5 +43,5 @@ export function SiegeCard({ card, currentRow }: SiegeCardProps) {
 }
 
 function isOnActiveRow(card: ISiegeEngineCard, rowToCheck: number) {
-  return false; // card.activeOnRows.includes(rowToCheck);
+  return card.rowData[rowToCheck].isActive;
 }
