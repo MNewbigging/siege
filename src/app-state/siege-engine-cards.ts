@@ -1,10 +1,10 @@
-import { ISiegeEngineCard } from "./types";
+import { SiegeEngineCard, SiegeEngineEffect } from "./types";
 
 // There are 2 of each siege engine card
-export const siegeEngineCards: ISiegeEngineCard[] = [
+export const siegeEngineCards: SiegeEngineCard[] = [
   {
     name: "Catapult",
-    effect: "Reroll one 6",
+    effect: SiegeEngineEffect.Catapult,
     rowData: [
       {
         rowIndex: 0,
@@ -35,7 +35,7 @@ export const siegeEngineCards: ISiegeEngineCard[] = [
   },
   {
     name: "Ballista",
-    effect: "Forfeit one Dice and one Champion",
+    effect: SiegeEngineEffect.Ballista,
     rowData: [
       {
         rowIndex: 0,
@@ -66,7 +66,7 @@ export const siegeEngineCards: ISiegeEngineCard[] = [
   },
   {
     name: "Flaming Rain",
-    effect: "Discard one Champion. Flip one Champion",
+    effect: SiegeEngineEffect.FlamingRain,
     rowData: [
       {
         rowIndex: 0,
@@ -97,7 +97,7 @@ export const siegeEngineCards: ISiegeEngineCard[] = [
   },
   {
     name: "Gargan's Eye",
-    effect: "Spend one Strengh dice and one Magic dice",
+    effect: SiegeEngineEffect.GargansEye,
     rowData: [
       {
         rowIndex: 0,
@@ -128,7 +128,7 @@ export const siegeEngineCards: ISiegeEngineCard[] = [
   },
   {
     name: "Breach Tower",
-    effect: "Load in one adjacent Troop card",
+    effect: SiegeEngineEffect.BreachTower,
     rowData: [
       {
         rowIndex: 0,
@@ -159,7 +159,7 @@ export const siegeEngineCards: ISiegeEngineCard[] = [
   },
   {
     name: "Trebuchet",
-    effect: "Add Damage to the Turret below",
+    effect: SiegeEngineEffect.Trebuchet,
     rowData: [
       {
         rowIndex: 0,
@@ -190,7 +190,7 @@ export const siegeEngineCards: ISiegeEngineCard[] = [
   },
   {
     name: "Ogre's Reach",
-    effect: "Add 2 Damage to the Turret below",
+    effect: SiegeEngineEffect.OgresReach,
     rowData: [
       {
         rowIndex: 0,
@@ -221,7 +221,7 @@ export const siegeEngineCards: ISiegeEngineCard[] = [
   },
   {
     name: "Battering Ram",
-    effect: "Lower each Strength die by 1",
+    effect: SiegeEngineEffect.BatteringRam,
     rowData: [
       {
         rowIndex: 0,
@@ -252,7 +252,7 @@ export const siegeEngineCards: ISiegeEngineCard[] = [
   },
   {
     name: "Incendiaries",
-    effect: "Reroll one 5",
+    effect: SiegeEngineEffect.Incendiaries,
     rowData: [
       {
         rowIndex: 0,
@@ -283,7 +283,7 @@ export const siegeEngineCards: ISiegeEngineCard[] = [
   },
   {
     name: "Spinblade",
-    effect: "Spend one dice. Reroll one 4.",
+    effect: SiegeEngineEffect.Spinblade,
     rowData: [
       {
         rowIndex: 0,

@@ -1,11 +1,11 @@
 import { ReactElement } from "react";
-import { ISiegeEngineCard, RoundStage } from "../../app-state/types";
+import { SiegeEngineCard, RoundStage } from "../../app-state/types";
 import "./siege-card.scss";
 import { useEventUpdater } from "../hooks/use-event-updater";
 import { useGameState } from "../game-state-context";
 
 interface SiegeCardProps {
-  card: ISiegeEngineCard;
+  card: SiegeEngineCard;
   currentRow: number;
 }
 
@@ -17,7 +17,6 @@ export function SiegeCard({ card, currentRow }: SiegeCardProps) {
   const shouldHighlight =
     gameState.roundStage === RoundStage.B_ResolveSiege &&
     isOnActiveRow(card, currentRow);
-  console.log(`${card.name} on ${currentRow}: ${shouldHighlight}`);
   const cardClasses = ["siege-card", shouldHighlight ? "highlight" : ""];
 
   // Construct the ranges block
@@ -42,6 +41,6 @@ export function SiegeCard({ card, currentRow }: SiegeCardProps) {
   );
 }
 
-function isOnActiveRow(card: ISiegeEngineCard, rowToCheck: number) {
+function isOnActiveRow(card: SiegeEngineCard, rowToCheck: number) {
   return card.rowData[rowToCheck].isActive;
 }

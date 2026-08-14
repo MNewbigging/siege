@@ -6,7 +6,7 @@ import {
   BattlefieldCard,
   DiceValue,
   RoundStage,
-  ISiegeEngineCard,
+  SiegeEngineCard,
   ITroopCard,
 } from "./types";
 import { diceRoll, getCountOfAttackType, shuffleArray } from "./utils";
@@ -17,7 +17,7 @@ export class GameState {
   maxRounds = 7;
   roundStage: RoundStage = RoundStage.A_RollDice;
 
-  siegeDeck: ISiegeEngineCard[];
+  siegeDeck: SiegeEngineCard[];
   troopDeck: ITroopCard[];
   playerHand: ITroopCard[];
   battlefield: BattlefieldCard[][] = []; // by column, index 0 is front/vanguard
@@ -46,7 +46,7 @@ export class GameState {
     }
 
     for (let i = 0; i < this.magicDice; i++) {
-      this.activeDice.push({ type: AttackType.Magic, value: diceRoll() });
+      this.activeDice.push({ type: AttackType.Holy, value: diceRoll() });
     }
 
     this.roundStage = RoundStage.B_ResolveSiege;
@@ -55,7 +55,7 @@ export class GameState {
   }
 
   private makeSiegeDeck() {
-    const siegeDeck: ISiegeEngineCard[] = [];
+    const siegeDeck: SiegeEngineCard[] = [];
 
     siegeEngineCards.forEach((card) => {
       // Each card is doubled

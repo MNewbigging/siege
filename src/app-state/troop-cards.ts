@@ -10,16 +10,16 @@ export const allTroopCards: ITroopCard[] = [
   },
   {
     name: "Rune Witch",
-    type: AttackType.Magic,
+    type: AttackType.Holy,
     effect: "Reroll any number of unused dice",
-    toDefeatA: { type: AttackType.Magic, value: 2 },
+    toDefeatA: { type: AttackType.Holy, value: 2 },
     toDefeatB: { type: AttackType.Strength, value: 2 },
   },
   {
     name: "Red Witch",
-    type: AttackType.Magic,
+    type: AttackType.Holy,
     effect: "Gain and roll one Magic dice. Gain one champion.",
-    toDefeatA: { type: AttackType.Magic, value: 3 },
+    toDefeatA: { type: AttackType.Holy, value: 3 },
     toDefeatB: { type: AttackType.Strength, value: 4 },
   },
   {
@@ -48,16 +48,16 @@ export const allTroopCards: ITroopCard[] = [
   },
   {
     name: "Efreet Enflamme",
-    type: AttackType.Magic,
+    type: AttackType.Holy,
     effect: "Spend +2 Magic to overkill an adjacent Siege engine",
-    toDefeatA: { type: AttackType.Magic, value: 4 },
+    toDefeatA: { type: AttackType.Holy, value: 4 },
     toDefeatB: { type: AttackType.Strength, value: 5 },
   },
   {
     name: "Undead Samurai",
-    type: AttackType.Magic,
+    type: AttackType.Holy,
     effect: "Swap two adjacent cards",
-    toDefeatA: { type: AttackType.Magic, value: 3 },
+    toDefeatA: { type: AttackType.Holy, value: 3 },
     toDefeatB: { type: AttackType.Strength, value: 3 },
   },
   {
@@ -68,16 +68,16 @@ export const allTroopCards: ITroopCard[] = [
   },
   {
     name: "Lycan Mage",
-    type: AttackType.Magic,
+    type: AttackType.Holy,
     effect: "Spend +2 Strength to overkill an adj card",
-    toDefeatA: { type: AttackType.Magic, value: 4 },
+    toDefeatA: { type: AttackType.Holy, value: 4 },
     toDefeatB: { type: AttackType.Strength, value: 4 },
   },
   {
     name: "Gargan Priest",
-    type: AttackType.Magic,
+    type: AttackType.Holy,
     effect: "Block the effect of one Siege",
-    toDefeatA: { type: AttackType.Magic, value: 2 },
+    toDefeatA: { type: AttackType.Holy, value: 2 },
     toDefeatB: { type: AttackType.Strength, value: 3 },
   },
 ];
