@@ -54,9 +54,9 @@ export class GameState {
       this.activeDice.push({ type: AttackType.Holy, value: diceRoll() });
     }
 
-    this.toStage(RoundStage.B_ResolveSiege);
-
     eventUpdater.fire("rolled-dice");
+
+    this.toStage(RoundStage.B_ResolveSiege);
   }
 
   resolveSiegeEngine(siegeCard: SiegeEngineCard) {
@@ -192,5 +192,7 @@ export class GameState {
     // If there aren't any 6s we can stop early
     const sixes = this.activeDice.filter((die) => die.value === 6);
     if (!sixes.length) return true;
+
+    // Highlight 6s for player to choose
   }
 }
