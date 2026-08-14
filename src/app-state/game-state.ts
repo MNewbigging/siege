@@ -15,7 +15,7 @@ import { diceRoll, getCountOfAttackType, shuffleArray } from "./utils";
 ("./siege-engine-cards");
 
 interface PendingDiceSelection {
-  validValues: number[];
+  value: number;
   onSelect: (dice: Dice) => void;
 }
 
@@ -33,6 +33,7 @@ export class GameState {
 
   // Transient
   siegeEnginesToResolve: SiegeEngineCard[] = [];
+  currentlyResolvingSiegeEngine?: SiegeEngineCard;
   pendingDiceSelection?: PendingDiceSelection;
 
   private strengthDice: number;
@@ -56,6 +57,9 @@ export class GameState {
       this.activeDice.push({ type: AttackType.Strength, value: diceRoll() });
     }
 
+    // Testing incendiaries
+    this.activeDice[0].value = 5;
+
     for (let i = 0; i < this.magicDice; i++) {
       this.activeDice.push({ type: AttackType.Holy, value: diceRoll() });
     }
@@ -65,7 +69,18 @@ export class GameState {
     this.toStage(RoundStage.B_ResolveSiege);
   }
 
-  resolveSiegeEngine(siegeCard: SiegeEngineCard) {
+  beginResolveSiegeEngine(siegeCard: SiegeEngineCard) {
+    // If currently resolving another card, stop
+    if (this.currentlyResolvingSiegeEngine !== undefined) return;
+
+    // Remove from array and keep in separate prop
+    this.siegeEnginesToResolve = this.siegeEnginesToResolve.filter(
+      (card) => card !== siegeCard,
+    );
+    this.currentlyResolvingSiegeEngine = siegeCard;
+    eventUpdater.fire("resolve-siege-engines");
+
+    // Then being to resolve the siege card
     switch (siegeCard.effect) {
       case SiegeEngineEffect.Ballista:
         break;
@@ -74,13 +89,24 @@ export class GameState {
       case SiegeEngineEffect.BreachTower:
         break;
       case SiegeEngineEffect.Catapult:
-        this.resolveCatapult();
+        if (this.hasActiveDiceOfValue(6))
+          this.setupRerollRequest(6, () => this.finishResolveSiegeEngine());
+        else {
+          // No 6s to reroll, can immediately resolve this siege engine
+          this.finishResolveSiegeEngine();
+        }
         break;
       case SiegeEngineEffect.FlamingRain:
         break;
       case SiegeEngineEffect.GargansEye:
         break;
       case SiegeEngineEffect.Incendiaries:
+        if (this.hasActiveDiceOfValue(5))
+          this.setupRerollRequest(5, () => this.finishResolveSiegeEngine());
+        else {
+          // No 5s to reroll, can immediately resolve this siege engine
+          this.finishResolveSiegeEngine();
+        }
         break;
       case SiegeEngineEffect.OgresReach:
         break;
@@ -91,6 +117,11 @@ export class GameState {
       default:
         break;
     }
+  }
+
+  private finishResolveSiegeEngine() {
+    this.currentlyResolvingSiegeEngine = undefined;
+    eventUpdater.fire("resolve-siege-engines");
   }
 
   private makeSiegeDeck() {
@@ -109,8 +140,15 @@ export class GameState {
     // Shuffled
     shuffleArray(siegeDeck);
 
-    // Then remove 5
-    siegeDeck.length = 13;
+    // Testing incendiaries: reserve it before truncation
+    const incendiariesIndex = siegeDeck.findIndex(
+      (card) => card.effect === SiegeEngineEffect.Incendiaries,
+    );
+    const [incendiaries] = siegeDeck.splice(incendiariesIndex, 1);
+
+    // setupBattlefield draws from the end with pop()
+    siegeDeck.length = 12;
+    siegeDeck.push(incendiaries);
 
     return siegeDeck;
   }
@@ -201,22 +239,21 @@ export class GameState {
     return toResolve;
   }
 
-  private resolveCatapult() {
-    // Reroll a 6
+  private hasActiveDiceOfValue(value: number) {
+    return this.activeDice.some((dice) => dice.value === value);
+  }
 
-    // If there aren't any 6s we can stop early
-    const sixes = this.activeDice.filter((die) => die.value === 6);
-    if (!sixes.length) return true;
-
-    // The player needs to select a 6 to reroll
+  private setupRerollRequest(toReroll: number, onComplete: () => void) {
+    // Siege engines can request a reroll of a single 4/5/6
     const onSelect = (dice: Dice) => {
-      // Reroll this dice
       const newValue = diceRoll();
       dice.value = newValue;
       eventUpdater.fire("rolled-dice");
       this.pendingDiceSelection = undefined;
+      onComplete();
     };
 
-    this.pendingDiceSelection = { validValues: [6], onSelect };
+    this.pendingDiceSelection = { value: toReroll, onSelect };
+    eventUpdater.fire("dice-update");
   }
 }

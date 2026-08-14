@@ -1,5 +1,5 @@
 export type GameEvent =
-  "game-started" | "rolled-dice" | "resolve-siege-engines";
+  "game-started" | "rolled-dice" | "resolve-siege-engines" | "dice-update";
 
 type EventCallback = () => void;
 

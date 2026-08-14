@@ -9,6 +9,7 @@
   align-items: center;
 
   &.highlight {
+    cursor: pointer;
     border-color: red;
     box-shadow: 0 0 10px rgba(255, 0, 0, 0.65);
   }

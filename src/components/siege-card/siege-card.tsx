@@ -12,13 +12,17 @@ export function SiegeCard({ card }: SiegeCardProps) {
   const gameState = useGameState();
   useEventUpdater("resolve-siege-engines");
 
-  // If this is one of the sieges to resolve, highlight it
-  const shouldResolve = gameState.siegeEnginesToResolve.includes(card);
-  const cardClasses = ["siege-card", shouldResolve ? "highlight" : ""];
+  const isActive = gameState.currentlyResolvingSiegeEngine === card;
+  const isQueued = gameState.siegeEnginesToResolve.includes(card);
+  const cardClasses = [
+    "siege-card",
+    isActive ? "highlight-active" : "",
+    isQueued ? "highlight-queued" : "",
+  ];
 
   function onClick() {
-    if (shouldResolve) {
-      gameState.resolveSiegeEngine(card);
+    if (isQueued) {
+      gameState.beginResolveSiegeEngine(card);
     }
   }
 

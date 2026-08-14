@@ -9,9 +9,7 @@ interface DiceDisplayProps {
 export function DiceDisplay({ dice }: DiceDisplayProps) {
   const gameState = useGameState();
 
-  const isValidSelection = gameState.pendingDiceSelection?.validValues.includes(
-    dice.value,
-  );
+  const isValidSelection = gameState.pendingDiceSelection?.value === dice.value;
 
   function onClick() {
     if (isValidSelection) {
