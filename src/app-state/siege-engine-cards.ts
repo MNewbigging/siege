@@ -5,55 +5,311 @@ export const siegeEngineCards: ISiegeEngineCard[] = [
   {
     name: "Catapult",
     effect: "Reroll one 6",
-    healthPerRow: [10, 12, 14, 14, 14],
-    activeOnRows: [1, 2, 3],
+    rowData: [
+      {
+        rowIndex: 0,
+        health: 10,
+        isActive: true,
+      },
+      {
+        rowIndex: 1,
+        health: 12,
+        isActive: true,
+      },
+      {
+        rowIndex: 2,
+        health: 14,
+        isActive: true,
+      },
+      {
+        rowIndex: 3,
+        health: 14,
+        isActive: false,
+      },
+      {
+        rowIndex: 4,
+        health: 14,
+        isActive: false,
+      },
+    ],
   },
   {
     name: "Ballista",
     effect: "Forfeit one Dice and one Champion",
-    healthPerRow: [10, 14, 14, 14, 14],
-    activeOnRows: [1, 2],
+    rowData: [
+      {
+        rowIndex: 0,
+        health: 10,
+        isActive: true,
+      },
+      {
+        rowIndex: 1,
+        health: 14,
+        isActive: true,
+      },
+      {
+        rowIndex: 2,
+        health: 14,
+        isActive: false,
+      },
+      {
+        rowIndex: 3,
+        health: 14,
+        isActive: false,
+      },
+      {
+        rowIndex: 4,
+        health: 14,
+        isActive: false,
+      },
+    ],
   },
   {
     name: "Flaming Rain",
     effect: "Discard one Champion. Flip one Champion",
-    healthPerRow: [10, 14, 12, 14, 14],
-    activeOnRows: [1, 3, 5],
+    rowData: [
+      {
+        rowIndex: 0,
+        health: 10,
+        isActive: true,
+      },
+      {
+        rowIndex: 1,
+        health: 14,
+        isActive: false,
+      },
+      {
+        rowIndex: 2,
+        health: 12,
+        isActive: true,
+      },
+      {
+        rowIndex: 3,
+        health: 14,
+        isActive: false,
+      },
+      {
+        rowIndex: 4,
+        health: 14,
+        isActive: true,
+      },
+    ],
   },
   {
     name: "Gargan's Eye",
     effect: "Spend one Strengh dice and one Magic dice",
-    healthPerRow: [14, 13, 13, 13, 14],
-    activeOnRows: [2, 3, 4],
+    rowData: [
+      {
+        rowIndex: 0,
+        health: 14,
+        isActive: false,
+      },
+      {
+        rowIndex: 1,
+        health: 13,
+        isActive: true,
+      },
+      {
+        rowIndex: 2,
+        health: 13,
+        isActive: true,
+      },
+      {
+        rowIndex: 3,
+        health: 13,
+        isActive: true,
+      },
+      {
+        rowIndex: 4,
+        health: 14,
+        isActive: false,
+      },
+    ],
   },
   {
     name: "Breach Tower",
     effect: "Load in one adjacent Troop card",
-    healthPerRow: [8, 8, 14, 14, 14],
-    activeOnRows: [1, 2],
+    rowData: [
+      {
+        rowIndex: 0,
+        health: 8,
+        isActive: true,
+      },
+      {
+        rowIndex: 1,
+        health: 8,
+        isActive: true,
+      },
+      {
+        rowIndex: 2,
+        health: 14,
+        isActive: false,
+      },
+      {
+        rowIndex: 3,
+        health: 14,
+        isActive: false,
+      },
+      {
+        rowIndex: 4,
+        health: 14,
+        isActive: false,
+      },
+    ],
   },
   {
     name: "Trebuchet",
     effect: "Add Damage to the Turret below",
-    healthPerRow: [12, 13, 14, 13, 14],
-    activeOnRows: [1, 2, 3, 4],
+    rowData: [
+      {
+        rowIndex: 0,
+        health: 12,
+        isActive: true,
+      },
+      {
+        rowIndex: 1,
+        health: 13,
+        isActive: true,
+      },
+      {
+        rowIndex: 2,
+        health: 14,
+        isActive: true,
+      },
+      {
+        rowIndex: 3,
+        health: 13,
+        isActive: true,
+      },
+      {
+        rowIndex: 4,
+        health: 14,
+        isActive: false,
+      },
+    ],
   },
   {
     name: "Ogre's Reach",
     effect: "Add 2 Damage to the Turret below",
-    healthPerRow: [10, 12, 14, 14, 14],
-    activeOnRows: [1, 2],
+    rowData: [
+      {
+        rowIndex: 0,
+        health: 10,
+        isActive: true,
+      },
+      {
+        rowIndex: 1,
+        health: 12,
+        isActive: true,
+      },
+      {
+        rowIndex: 2,
+        health: 14,
+        isActive: false,
+      },
+      {
+        rowIndex: 3,
+        health: 14,
+        isActive: false,
+      },
+      {
+        rowIndex: 4,
+        health: 14,
+        isActive: false,
+      },
+    ],
   },
   {
     name: "Battering Ram",
     effect: "Lower each Strength die by 1",
-    healthPerRow: [14, 14, 14, 14, 14],
-    activeOnRows: [1],
+    rowData: [
+      {
+        rowIndex: 0,
+        health: 14,
+        isActive: true,
+      },
+      {
+        rowIndex: 1,
+        health: 14,
+        isActive: false,
+      },
+      {
+        rowIndex: 2,
+        health: 14,
+        isActive: false,
+      },
+      {
+        rowIndex: 3,
+        health: 14,
+        isActive: false,
+      },
+      {
+        rowIndex: 4,
+        health: 14,
+        isActive: false,
+      },
+    ],
   },
   {
     name: "Incendiaries",
     effect: "Reroll one 5",
-    healthPerRow: [10, 11, 12, 13, 14],
-    activeOnRows: [1, 2, 3, 4, 57],
+    rowData: [
+      {
+        rowIndex: 0,
+        health: 10,
+        isActive: true,
+      },
+      {
+        rowIndex: 1,
+        health: 11,
+        isActive: true,
+      },
+      {
+        rowIndex: 2,
+        health: 12,
+        isActive: true,
+      },
+      {
+        rowIndex: 3,
+        health: 13,
+        isActive: true,
+      },
+      {
+        rowIndex: 4,
+        health: 14,
+        isActive: true,
+      },
+    ],
+  },
+  {
+    name: "Spinblade",
+    effect: "Spend one dice. Reroll one 4.",
+    rowData: [
+      {
+        rowIndex: 0,
+        health: 14,
+        isActive: false,
+      },
+      {
+        rowIndex: 1,
+        health: 12,
+        isActive: true,
+      },
+      {
+        rowIndex: 2,
+        health: 12,
+        isActive: true,
+      },
+      {
+        rowIndex: 3,
+        health: 14,
+        isActive: false,
+      },
+      {
+        rowIndex: 4,
+        health: 12,
+        isActive: true,
+      },
+    ],
   },
 ];

@@ -30,7 +30,7 @@ function BattlefieldColumn({ column, colIdx }: BattlefieldColumnProps) {
   let cards: ReactElement[] = [];
 
   // Use the correct component for each card type
-  column.forEach((card) => {
+  column.forEach((card, rowPosIndex) => {
     if (!card) {
       cards.push(<EmptyCard />);
     }
@@ -40,7 +40,7 @@ function BattlefieldColumn({ column, colIdx }: BattlefieldColumnProps) {
     }
 
     if (isSiegeCard(card)) {
-      cards.push(<SiegeCard card={card} />);
+      cards.push(<SiegeCard card={card} currentRow={rowPosIndex} />);
     }
   });
 

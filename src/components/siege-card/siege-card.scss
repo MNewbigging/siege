@@ -8,6 +8,11 @@
   display: flex;
   flex-direction: column;
 
+  &.highlight {
+    border-color: red;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.65);
+  }
+
   .body {
     flex: 2 1 100%;
     padding-bottom: 5px;
@@ -16,7 +21,7 @@
     .ranges {
       flex: 0 0 26px;
       display: flex;
-      flex-direction: column;
+      flex-direction: column-reverse;
 
       .range {
         flex: 0 0 auto;

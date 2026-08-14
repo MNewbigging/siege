@@ -20,15 +20,20 @@ export function isTroopCard(card: any): card is ITroopCard {
   return "toDefeatA" in card;
 }
 
+export interface ISiegeEngineRowData {
+  rowIndex: number; // 0 is the bottom row closest to walls
+  health: number; // at this row position
+  isActive: boolean; // at this row position
+}
+
 export interface ISiegeEngineCard {
   name: string;
   effect: string;
-  healthPerRow: number[]; // bottom-up, starts at 1/V and goes to 5
-  activeOnRows: number[]; // V = 1
+  rowData: ISiegeEngineRowData[];
 }
 
 export function isSiegeCard(card: any): card is ISiegeEngineCard {
-  return "healthPerRow" in card;
+  return "rowData" in card;
 }
 
 export type BattlefieldCard = ISiegeEngineCard | ITroopCard | undefined;

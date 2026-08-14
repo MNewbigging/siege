@@ -1,33 +1,38 @@
 import { ReactElement } from "react";
-import { ISiegeEngineCard } from "../../app-state/types";
+import { ISiegeEngineCard, RoundStage } from "../../app-state/types";
 import "./siege-card.scss";
 import { useEventUpdater } from "../hooks/use-event-updater";
 import { useGameState } from "../game-state-context";
 
 interface SiegeCardProps {
   card: ISiegeEngineCard;
+  currentRow: number;
 }
 
-export function SiegeCard({ card }: SiegeCardProps) {
-  useGameState();
+export function SiegeCard({ card, currentRow }: SiegeCardProps) {
+  const gameState = useGameState();
   useEventUpdater("rolled-dice");
 
-  // If
+  // If it's time to resolve siege cards, highlight it
+  const shouldHighlight =
+    gameState.roundStage === RoundStage.B_ResolveSiege &&
+    isOnActiveRow(card, currentRow + 1);
+  console.log(`${card.name} on ${currentRow + 1}: ${shouldHighlight}`);
+  const cardClasses = ["siege-card", shouldHighlight ? "highlight" : ""];
 
   // Construct the ranges block
   const ranges: ReactElement[] = [];
-  card.healthPerRow.forEach((health, index) => {
-    const activeClass = card.activeOnRows.includes(index + 1) ? "active" : "";
-    const classes = ["range", activeClass].join(" ");
+  card.rowData.forEach((rowData) => {
+    const classes = ["range", rowData.isActive ? "active" : ""].join(" ");
     ranges.push(
-      <div key={`health-${index}`} className={classes}>
-        {health}
+      <div key={`range-${rowData.rowIndex}`} className={classes}>
+        {rowData.health}
       </div>,
     );
   });
 
   return (
-    <div className="siege-card">
+    <div className={cardClasses.join(" ")}>
       <div className="body">
         <div className="ranges">{ranges}</div>
         <div className="name">{card.name}</div>
@@ -35,4 +40,8 @@ export function SiegeCard({ card }: SiegeCardProps) {
       <div className="effect-bar">{card.effect}</div>
     </div>
   );
+}
+
+function isOnActiveRow(card: ISiegeEngineCard, rowToCheck: number) {
+  return false; // card.activeOnRows.includes(rowToCheck);
 }
