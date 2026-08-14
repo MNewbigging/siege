@@ -88,24 +88,14 @@ export class GameState {
       case SiegeEngineEffect.BreachTower:
         break;
       case SiegeEngineEffect.Catapult:
-        if (this.hasActiveDiceOfValue(6))
-          this.setupRerollRequest(6, () => this.finishResolveSiegeEngine());
-        else {
-          // No 6s to reroll, can immediately resolve this siege engine
-          this.finishResolveSiegeEngine();
-        }
+        this.setupRerollRequest(6, this.finishResolveSiegeEngine);
         break;
       case SiegeEngineEffect.FlamingRain:
         break;
       case SiegeEngineEffect.GargansEye:
         break;
       case SiegeEngineEffect.Incendiaries:
-        if (this.hasActiveDiceOfValue(5))
-          this.setupRerollRequest(5, () => this.finishResolveSiegeEngine());
-        else {
-          // No 5s to reroll, can immediately resolve this siege engine
-          this.finishResolveSiegeEngine();
-        }
+        this.setupRerollRequest(5, this.finishResolveSiegeEngine);
         break;
       case SiegeEngineEffect.OgresReach:
         break;
@@ -118,14 +108,14 @@ export class GameState {
     }
   }
 
-  private finishResolveSiegeEngine() {
+  private finishResolveSiegeEngine = () => {
     this.currentlyResolvingSiegeEngine = undefined;
     eventUpdater.fire("resolve-siege-engines");
 
     // Was this the last one to resolve?
     if (!this.siegeEnginesToResolve.length)
       this.toStage(RoundStage.C_ResolveEvent);
-  }
+  };
 
   private setupBattlefield() {
     const battlefield: BattlefieldCard[][] = [];
@@ -194,15 +184,21 @@ export class GameState {
     return toResolve;
   }
 
-  private hasActiveDiceOfValue(value: number) {
-    return this.activeDice.some((dice) => dice.value === value);
-  }
-
   private setupRerollRequest(toReroll: number, onComplete: () => void) {
-    // Siege engines can request a reroll of a single 4/5/6
+    // If there's not an active dice of the given value to reroll, complete
+    const hasActiveDiceOfValue = this.activeDice.some(
+      (dice) => dice.value === toReroll,
+    );
+    if (!hasActiveDiceOfValue) {
+      onComplete();
+      return;
+    }
+
     const onSelect = (dice: Dice) => {
-      const newValue = diceRoll();
-      dice.value = newValue;
+      if (dice.value !== toReroll)
+        throw new Error("Not the requested reroll dice value");
+
+      dice.value = diceRoll();
       eventUpdater.fire("dice-update");
       this.pendingDiceSelection = undefined;
       onComplete();
