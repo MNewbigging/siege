@@ -1,6 +1,5 @@
 import { eventUpdater } from "../events/event-updater";
-import { siegeEngineCards } from "./siege-engine-cards";
-import { allTroopCards } from "./troop-cards";
+import { makeSiegeDeck, makeTroopDeck } from "./setup-utils";
 import {
   AttackType,
   BattlefieldCard,
@@ -11,7 +10,7 @@ import {
   SiegeEngineEffect,
   isSiegeCard,
 } from "./types";
-import { diceRoll, getCountOfAttackType, shuffleArray } from "./utils";
+import { diceRoll } from "./utils";
 ("./siege-engine-cards");
 
 interface PendingDiceSelection {
@@ -41,8 +40,8 @@ export class GameState {
 
   constructor() {
     // Setup
-    this.siegeDeck = this.makeSiegeDeck();
-    const troopDeck = this.makeTroopDeck();
+    this.siegeDeck = makeSiegeDeck();
+    const troopDeck = makeTroopDeck();
     this.playerHand = troopDeck.splice(-2);
     this.troopDeck = troopDeck;
 
@@ -122,59 +121,6 @@ export class GameState {
   private finishResolveSiegeEngine() {
     this.currentlyResolvingSiegeEngine = undefined;
     eventUpdater.fire("resolve-siege-engines");
-  }
-
-  private makeSiegeDeck() {
-    const siegeDeck: SiegeEngineCard[] = [];
-
-    siegeEngineCards.forEach((card) => {
-      // Each card is doubled
-      for (let copy = 0; copy < 2; copy++) {
-        siegeDeck.push({
-          ...card,
-          rowData: card.rowData.map((row) => ({ ...row })),
-        });
-      }
-    });
-
-    // Shuffled
-    shuffleArray(siegeDeck);
-
-    // Testing incendiaries: reserve it before truncation
-    const incendiariesIndex = siegeDeck.findIndex(
-      (card) => card.effect === SiegeEngineEffect.Incendiaries,
-    );
-    const [incendiaries] = siegeDeck.splice(incendiariesIndex, 1);
-
-    // setupBattlefield draws from the end with pop()
-    siegeDeck.length = 12;
-    siegeDeck.push(incendiaries);
-
-    return siegeDeck;
-  }
-
-  private makeTroopDeck() {
-    const troopDeck: ITroopCard[] = [];
-
-    allTroopCards.forEach((card) => {
-      const count = getCountOfAttackType(card.type);
-
-      for (let i = 0; i < count; i++) {
-        troopDeck.push({
-          ...card,
-          toDefeatA: { ...card.toDefeatA },
-          toDefeatB: card.toDefeatB ? { ...card.toDefeatB } : undefined,
-        });
-      }
-    });
-
-    // Shuffle
-    shuffleArray(troopDeck);
-
-    // Remove 2
-    troopDeck.length = 46;
-
-    return troopDeck;
   }
 
   private setupBattlefield() {
