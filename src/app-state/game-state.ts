@@ -92,7 +92,12 @@ export class GameState {
 
     siegeEngineCards.forEach((card) => {
       // Each card is doubled
-      siegeDeck.push(card, card);
+      for (let copy = 0; copy < 2; copy++) {
+        siegeDeck.push({
+          ...card,
+          rowData: card.rowData.map((row) => ({ ...row })),
+        });
+      }
     });
 
     // Shuffled
