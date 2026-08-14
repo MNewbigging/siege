@@ -1,6 +1,6 @@
 export enum AttackType {
-  Strength = "Strength",
-  Holy = "Holy",
+  Strength = "strength",
+  Holy = "holy",
 }
 
 export interface DiceValue {
