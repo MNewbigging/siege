@@ -4,10 +4,8 @@ import {
   BattlefieldCard,
   isSiegeCard,
   isTroopCard,
-  ITroopCard,
 } from "../../app-state/types";
 import { EmptyCard } from "../empty-card/empty-card";
-import { EnemyCard } from "../enemy-card/enemy-card";
 import { SiegeCard } from "../siege-card/siege-card";
 import { TroopCard } from "../troop-card/troop-card";
 import "./battlefield.scss";

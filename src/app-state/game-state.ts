@@ -9,6 +9,7 @@ import {
   ISiegeEngineCard,
   ITroopCard,
 } from "./types";
+import { diceRoll, getCountOfAttackType, shuffleArray } from "./utils";
 ("./siege-engine-cards");
 
 export class GameState {
@@ -27,25 +28,14 @@ export class GameState {
   private magicDice: number;
 
   constructor() {
-    // Setup decks
+    // Setup
     this.siegeDeck = this.makeSiegeDeck();
     const troopDeck = this.makeTroopDeck();
     this.playerHand = troopDeck.splice(-2);
     this.troopDeck = troopDeck;
 
-    // Setup battlefied - there are 5 columns
-    for (let col = 0; col < 5; col++) {
-      const column: BattlefieldCard[] = [];
-      // Put 4 troops in first 4 spots
-      for (let i = 0; i < 4; i++) {
-        column.push(this.troopDeck.pop());
-      }
-      // Seige engine at the top in last spot
-      column.push(this.siegeDeck.pop());
-      this.battlefield.push(column);
-    }
+    this.battlefield = this.setupBattlefield();
 
-    // Starting dice
     this.strengthDice = 3;
     this.magicDice = 2;
   }
@@ -65,10 +55,10 @@ export class GameState {
   }
 
   private makeSiegeDeck() {
-    // Each card is doubled
     const siegeDeck: ISiegeEngineCard[] = [];
 
     siegeEngineCards.forEach((card) => {
+      // Each card is doubled
       siegeDeck.push(card, card);
     });
 
@@ -85,7 +75,7 @@ export class GameState {
     const troopDeck: ITroopCard[] = [];
 
     allTroopCards.forEach((card) => {
-      const count = card.type === AttackType.Strength ? 5 : 3;
+      const count = getCountOfAttackType(card.type);
 
       for (let i = 0; i < count; i++) {
         troopDeck.push(card);
@@ -100,18 +90,25 @@ export class GameState {
 
     return troopDeck;
   }
-}
 
-/* Randomize array in-place using Durstenfeld shuffle algorithm */
-function shuffleArray(array: any[]) {
-  for (var i = array.length - 1; i > 0; i--) {
-    var j = Math.floor(Math.random() * (i + 1));
-    var temp = array[i];
-    array[i] = array[j];
-    array[j] = temp;
+  private setupBattlefield() {
+    const battlefield: BattlefieldCard[][] = [];
+
+    // There are 5 columns on the battlefield
+    for (let col = 0; col < 5; col++) {
+      const column: BattlefieldCard[] = [];
+
+      // Put 4 troops in first 4 spots
+      for (let i = 0; i < 4; i++) {
+        column.push(this.troopDeck.pop());
+      }
+
+      // Seige engine at the top in last spot
+      column.push(this.siegeDeck.pop());
+
+      battlefield.push(column);
+    }
+
+    return battlefield;
   }
-}
-
-function diceRoll() {
-  return Math.floor(Math.random() * 6) + 1;
 }

@@ -1,29 +1,29 @@
 .player-dice {
-    flex: 1 1 100%;
-    height: 100%;
-    padding-left: 10px;
+  flex: 1 1 100%;
+  height: 100%;
+  padding-left: 10px;
 
-    // This is for individual dice
-    display: flex;
-    justify-content: left;
-    align-items: center;
-    gap: 5px;
+  // This is for individual dice
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  gap: 5px;
 }
 
 .roll-prompt {
-    flex: 1 1 100%;
-    height: 100%;
+  flex: 1 1 100%;
+  height: 100%;
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
-    .roll-button {
-        cursor: pointer;
-        user-select: none;
-        font-size: 22px;
-        padding: 10px;
-        border-radius: 3px;
-        border: 2px solid black;
-    }
+  .roll-button {
+    cursor: pointer;
+    user-select: none;
+    font-size: 22px;
+    padding: 10px;
+    border-radius: 3px;
+    border: 2px solid black;
+  }
 }
