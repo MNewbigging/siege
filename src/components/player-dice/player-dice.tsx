@@ -1,14 +1,11 @@
-import { GameState } from "../../app-state/game-state";
+import { useGameState } from "../game-state-context";
 import { RoundStage } from "../../app-state/types";
 import { DiceDisplay } from "../dice-display/dice-display";
 import { useEventUpdater } from "../hooks/use-event-updater";
 import "./player-dice.scss";
 
-interface PlayerDiceProps {
-  gameState: GameState;
-}
-
-export function PlayerDice({ gameState }: PlayerDiceProps) {
+export function PlayerDice() {
+  const gameState = useGameState();
   useEventUpdater("rolled-dice");
 
   if (gameState.roundStage === RoundStage.A_RollDice)

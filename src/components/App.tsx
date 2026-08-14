@@ -1,4 +1,5 @@
 import { appState } from "../app-state/app-state";
+import { GameStateProvider } from "./game-state-context";
 import "./app.scss";
 import { Battlefield } from "./battlefield/battlefield";
 import { useEventUpdater } from "./hooks/use-event-updater";
@@ -12,10 +13,12 @@ export function App() {
   if (!appState.gameState) return <MainMenu />;
 
   return (
-    <div className="ui-root">
-      <Battlefield gameState={appState.gameState} />
-      <TowerWall />
-      <PlayerBar gameState={appState.gameState} />
-    </div>
+    <GameStateProvider value={appState.gameState}>
+      <div className="ui-root">
+        <Battlefield />
+        <TowerWall />
+        <PlayerBar />
+      </div>
+    </GameStateProvider>
   );
 }

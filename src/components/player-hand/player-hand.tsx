@@ -1,12 +1,9 @@
-import { GameState } from "../../app-state/game-state";
+import { useGameState } from "../game-state-context";
 import { BattlefieldCard } from "../../app-state/types";
 import "./player-hand.scss";
 
-interface PlayerHandProps {
-  gameState: GameState;
-}
-
-export function PlayerHand({ gameState }: PlayerHandProps) {
+export function PlayerHand() {
+  const gameState = useGameState();
   const thumbnails = gameState.playerHand.map((card, index) => (
     <CardThumb key={`card-thumb-${index}`} card={card} />
   ));

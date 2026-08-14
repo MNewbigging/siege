@@ -1,12 +1,9 @@
-import { GameState } from "../../app-state/game-state";
+import { useGameState } from "../game-state-context";
 import { useEventUpdater } from "../hooks/use-event-updater";
 import "./player-info.scss";
 
-interface PlayerInfoProps {
-  gameState: GameState;
-}
-
-export function PlayerInfo({ gameState }: PlayerInfoProps) {
+export function PlayerInfo() {
+  const gameState = useGameState();
   useEventUpdater("rolled-dice");
 
   return (

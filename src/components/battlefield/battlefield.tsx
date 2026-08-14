@@ -1,5 +1,5 @@
 import { ReactElement } from "react";
-import { GameState } from "../../app-state/game-state";
+import { useGameState } from "../game-state-context";
 import {
   BattlefieldCard,
   isSiegeCard,
@@ -10,11 +10,9 @@ import { SiegeCard } from "../siege-card/siege-card";
 import { TroopCard } from "../troop-card/troop-card";
 import "./battlefield.scss";
 
-interface BattlefieldProps {
-  gameState: GameState;
-}
+export function Battlefield() {
+  const gameState = useGameState();
 
-export function Battlefield({ gameState }: BattlefieldProps) {
   // A column for every array in the battlefield
   const columns = gameState.battlefield.map((column, index) => (
     <BattlefieldColumn key={`column-${index}`} column={column} colIdx={index} />
