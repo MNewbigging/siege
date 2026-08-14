@@ -1,4 +1,4 @@
-import { AttackType, DiceValue } from "../../app-state/types";
+import { DiceValue } from "../../app-state/types";
 import "./dice-display.scss";
 
 interface DiceDisplayProps {

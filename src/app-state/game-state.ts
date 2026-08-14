@@ -8,6 +8,8 @@ import {
   RoundStage,
   SiegeEngineCard,
   ITroopCard,
+  SiegeEngineEffect,
+  isSiegeCard,
 } from "./types";
 import { diceRoll, getCountOfAttackType, shuffleArray } from "./utils";
 ("./siege-engine-cards");
@@ -23,6 +25,9 @@ export class GameState {
   battlefield: BattlefieldCard[][] = []; // by column, index 0 is front/vanguard
   activeDice: DiceValue[] = [];
   spentDice: DiceValue[] = [];
+
+  // Stage specific
+  siegeEnginesToResolve: SiegeEngineCard[] = [];
 
   private strengthDice: number;
   private magicDice: number;
@@ -49,9 +54,37 @@ export class GameState {
       this.activeDice.push({ type: AttackType.Holy, value: diceRoll() });
     }
 
-    this.roundStage = RoundStage.B_ResolveSiege;
+    this.toStage(RoundStage.B_ResolveSiege);
 
     eventUpdater.fire("rolled-dice");
+  }
+
+  resolveSiegeEngine(siegeCard: SiegeEngineCard) {
+    switch (siegeCard.effect) {
+      case SiegeEngineEffect.Ballista:
+        break;
+      case SiegeEngineEffect.BatteringRam:
+        break;
+      case SiegeEngineEffect.BreachTower:
+        break;
+      case SiegeEngineEffect.Catapult:
+        this.resolveCatapult();
+        break;
+      case SiegeEngineEffect.FlamingRain:
+        break;
+      case SiegeEngineEffect.GargansEye:
+        break;
+      case SiegeEngineEffect.Incendiaries:
+        break;
+      case SiegeEngineEffect.OgresReach:
+        break;
+      case SiegeEngineEffect.Spinblade:
+        break;
+      case SiegeEngineEffect.Trebuchet:
+        break;
+      default:
+        break;
+    }
   }
 
   private makeSiegeDeck() {
@@ -110,5 +143,54 @@ export class GameState {
     }
 
     return battlefield;
+  }
+
+  private toStage(nextStage: RoundStage) {
+    switch (nextStage) {
+      case RoundStage.A_RollDice:
+        // Flip all champions
+        // Await player rolling dice
+        break;
+      case RoundStage.B_ResolveSiege:
+        // Determine engines to resolve
+        this.siegeEnginesToResolve = this.getSiegeEnginesToResolve();
+
+        // If there are none, can move onto next stage
+        if (!this.siegeEnginesToResolve.length) {
+          this.toStage(RoundStage.C_ResolveEvent);
+          return; // Prevents continuing after above toStage is done
+        }
+
+        this.roundStage = nextStage;
+        eventUpdater.fire("resolve-siege-engines");
+
+        break;
+      case RoundStage.C_ResolveEvent:
+        // Draw random event, show it
+        // Resolve effect
+        // Move on
+        break;
+    }
+  }
+
+  private getSiegeEnginesToResolve() {
+    const toResolve: SiegeEngineCard[] = [];
+    this.battlefield.forEach((col) => {
+      col.forEach((rowCard, rowIndex) => {
+        if (isSiegeCard(rowCard) && rowCard.rowData[rowIndex].isActive) {
+          toResolve.push(rowCard);
+        }
+      });
+    });
+
+    return toResolve;
+  }
+
+  private resolveCatapult() {
+    // Reroll a 6
+
+    // If there aren't any 6s we can stop early
+    const sixes = this.activeDice.filter((die) => die.value === 6);
+    if (!sixes.length) return true;
   }
 }

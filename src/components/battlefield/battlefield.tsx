@@ -40,7 +40,7 @@ function BattlefieldColumn({ column, colIdx }: BattlefieldColumnProps) {
     }
 
     if (isSiegeCard(card)) {
-      cards.push(<SiegeCard card={card} currentRow={rowPosIndex} />);
+      cards.push(<SiegeCard card={card} />);
     }
   });
 

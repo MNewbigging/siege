@@ -1,23 +1,26 @@
 import { ReactElement } from "react";
-import { SiegeEngineCard, RoundStage } from "../../app-state/types";
+import { SiegeEngineCard } from "../../app-state/types";
 import "./siege-card.scss";
 import { useEventUpdater } from "../hooks/use-event-updater";
 import { useGameState } from "../game-state-context";
 
 interface SiegeCardProps {
   card: SiegeEngineCard;
-  currentRow: number;
 }
 
-export function SiegeCard({ card, currentRow }: SiegeCardProps) {
+export function SiegeCard({ card }: SiegeCardProps) {
   const gameState = useGameState();
-  useEventUpdater("rolled-dice");
+  useEventUpdater("resolve-siege-engines");
 
-  // If it's time to resolve siege cards, highlight it
-  const shouldHighlight =
-    gameState.roundStage === RoundStage.B_ResolveSiege &&
-    isOnActiveRow(card, currentRow);
-  const cardClasses = ["siege-card", shouldHighlight ? "highlight" : ""];
+  // If this is one of the sieges to resolve, highlight it
+  const shouldResolve = gameState.siegeEnginesToResolve.includes(card);
+  const cardClasses = ["siege-card", shouldResolve ? "highlight" : ""];
+
+  function onClick() {
+    if (shouldResolve) {
+      gameState.resolveSiegeEngine(card);
+    }
+  }
 
   // Construct the ranges block
   const ranges: ReactElement[] = [];
@@ -31,7 +34,7 @@ export function SiegeCard({ card, currentRow }: SiegeCardProps) {
   });
 
   return (
-    <div className={cardClasses.join(" ")}>
+    <div className={cardClasses.join(" ")} onClick={onClick}>
       <div className="body">
         <div className="ranges">{ranges}</div>
         <div className="name">{card.name}</div>
@@ -39,8 +42,4 @@ export function SiegeCard({ card, currentRow }: SiegeCardProps) {
       <div className="effect-bar">{card.effect}</div>
     </div>
   );
-}
-
-function isOnActiveRow(card: SiegeEngineCard, rowToCheck: number) {
-  return card.rowData[rowToCheck].isActive;
 }
