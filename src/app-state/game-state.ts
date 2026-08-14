@@ -63,7 +63,7 @@ export class GameState {
       this.activeDice.push({ type: AttackType.Holy, value: diceRoll() });
     }
 
-    eventUpdater.fire("rolled-dice");
+    eventUpdater.fire("dice-update");
 
     this.toStage(RoundStage.B_ResolveSiege);
   }
@@ -121,6 +121,10 @@ export class GameState {
   private finishResolveSiegeEngine() {
     this.currentlyResolvingSiegeEngine = undefined;
     eventUpdater.fire("resolve-siege-engines");
+
+    // Was this the last one to resolve?
+    if (!this.siegeEnginesToResolve.length)
+      this.toStage(RoundStage.C_ResolveEvent);
   }
 
   private setupBattlefield() {
@@ -160,7 +164,7 @@ export class GameState {
           return; // Prevents continuing after above toStage is done
         }
 
-        this.roundStage = nextStage;
+        this.setStage(nextStage);
         eventUpdater.fire("resolve-siege-engines");
 
         break;
@@ -170,6 +174,11 @@ export class GameState {
         // Move on
         break;
     }
+  }
+
+  private setStage(stage: RoundStage) {
+    this.roundStage = stage;
+    eventUpdater.fire("round-stage-update");
   }
 
   private getSiegeEnginesToResolve() {
@@ -194,7 +203,7 @@ export class GameState {
     const onSelect = (dice: Dice) => {
       const newValue = diceRoll();
       dice.value = newValue;
-      eventUpdater.fire("rolled-dice");
+      eventUpdater.fire("dice-update");
       this.pendingDiceSelection = undefined;
       onComplete();
     };

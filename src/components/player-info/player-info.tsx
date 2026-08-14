@@ -4,7 +4,7 @@ import "./player-info.scss";
 
 export function PlayerInfo() {
   const gameState = useGameState();
-  useEventUpdater("rolled-dice");
+  useEventUpdater("round-stage-update");
 
   return (
     <div className="player-info">
