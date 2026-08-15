@@ -1,5 +1,5 @@
 import { eventUpdater } from "../events/event-updater";
-import { makeSiegeDeck, makeTroopDeck } from "./setup-utils";
+import { makeSiegeDeck, makeTroopDeck, makeTurrets } from "./setup-utils";
 import {
   AttackType,
   BattlefieldCard,
@@ -10,6 +10,7 @@ import {
   SiegeEngineEffect,
   isSiegeCard,
   Champion,
+  Turret,
 } from "./types";
 import { diceRoll } from "./utils";
 ("./siege-engine-cards");
@@ -39,6 +40,7 @@ export class GameState {
   activeDice: Dice[] = [];
   spentDice: Dice[] = [];
   activeChampions: Champion[] = [];
+  turrets: Turret[];
 
   // Transient
   siegeEnginesToResolve: SiegeEngineCard[] = [];
@@ -55,9 +57,8 @@ export class GameState {
     const troopDeck = makeTroopDeck();
     this.playerHand = troopDeck.splice(-2);
     this.troopDeck = troopDeck;
-
+    this.turrets = makeTurrets();
     this.battlefield = this.setupBattlefield();
-
     this.strengthDice = 3;
     this.holyDice = 2;
   }
@@ -66,9 +67,6 @@ export class GameState {
     for (let i = 0; i < this.strengthDice; i++) {
       this.activeDice.push({ type: AttackType.Strength, value: diceRoll() });
     }
-
-    // Testing
-    this.activeDice[0].value = 4;
 
     for (let i = 0; i < this.holyDice; i++) {
       this.activeDice.push({ type: AttackType.Holy, value: diceRoll() });
@@ -131,7 +129,12 @@ export class GameState {
         this.setupDiceRerollRequest(5, this.finishResolveSiegeEngine);
         break;
       case SiegeEngineEffect.OgresReach:
-        // todo
+        {
+          const columnIndex = this.battlefield.findIndex((col) =>
+            col.includes(siegeCard),
+          );
+          this.turrets[columnIndex].flames += 2;
+        }
         break;
       case SiegeEngineEffect.Spinblade:
         this.setupDiceSpendRequest({
@@ -141,7 +144,17 @@ export class GameState {
         });
         break;
       case SiegeEngineEffect.Trebuchet:
-        // todo
+        // Get column, then add a flame to turret
+        {
+          const columnIndex = this.battlefield.findIndex((col) =>
+            col.includes(siegeCard),
+          );
+          this.turrets[columnIndex].flames++;
+          eventUpdater.fire("turret-update");
+          // Check for game over
+          if (this.turrets[columnIndex].flames >= 4) this.gameOver();
+          else this.finishResolveSiegeEngine();
+        }
         break;
       default:
         break;
@@ -346,5 +359,9 @@ export class GameState {
 
     this.pendingChampionSelection = { canBeFlipped: false, onSelect };
     eventUpdater.fire("champion-update");
+  }
+
+  private gameOver() {
+    console.log("game over!");
   }
 }

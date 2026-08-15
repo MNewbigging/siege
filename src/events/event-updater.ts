@@ -3,7 +3,8 @@ export type GameEvent =
   | "resolve-siege-engines"
   | "dice-update"
   | "round-stage-update"
-  | "champion-update";
+  | "champion-update"
+  | "turret-update";
 
 type EventCallback = () => void;
 

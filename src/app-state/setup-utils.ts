@@ -1,6 +1,11 @@
 import { siegeEngineCards } from "./siege-engine-cards";
 import { allTroopCards } from "./troop-cards";
-import { SiegeEngineCard, SiegeEngineEffect, ITroopCard } from "./types";
+import {
+  SiegeEngineCard,
+  SiegeEngineEffect,
+  ITroopCard,
+  Turret,
+} from "./types";
 import { shuffleArray, getCountOfAttackType } from "./utils";
 
 export function makeSiegeDeck() {
@@ -19,15 +24,8 @@ export function makeSiegeDeck() {
   // Shuffled
   shuffleArray(siegeDeck);
 
-  // Testing incendiaries: reserve it before truncation
-  const wantedIndeex = siegeDeck.findIndex(
-    (card) => card.effect === SiegeEngineEffect.Spinblade,
-  );
-  const [wanted] = siegeDeck.splice(wantedIndeex, 1);
-
-  // setupBattlefield draws from the end with pop()
-  siegeDeck.length = 12;
-  siegeDeck.push(wanted);
+  // Remove 5 cards
+  siegeDeck.length = 13;
 
   return siegeDeck;
 }
@@ -54,4 +52,8 @@ export function makeTroopDeck() {
   troopDeck.length = 46;
 
   return troopDeck;
+}
+
+export function makeTurrets(): Turret[] {
+  return Array.from({ length: 5 }, () => ({ flames: 0 }) as Turret);
 }

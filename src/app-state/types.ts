@@ -66,6 +66,10 @@ export interface Champion {
   flipped: boolean;
 }
 
+export interface Turret {
+  flames: number;
+}
+
 /**
 
   GAME FLOW CONSISTS OF 7 ROUNDS OF:
