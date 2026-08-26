@@ -130,10 +130,11 @@ export class GameState {
         break;
       case SiegeEngineEffect.OgresReach:
         {
-          const columnIndex = this.battlefield.findIndex((col) =>
-            col.includes(siegeCard),
-          );
+          const columnIndex = this.getColumnIndex(siegeCard);
           this.turrets[columnIndex].flames += 2;
+          eventUpdater.fire("turret-update");
+          if (this.turrets[columnIndex].flames >= 4) this.gameOver();
+          else this.finishResolveSiegeEngine();
         }
         break;
       case SiegeEngineEffect.Spinblade:
@@ -146,9 +147,7 @@ export class GameState {
       case SiegeEngineEffect.Trebuchet:
         // Get column, then add a flame to turret
         {
-          const columnIndex = this.battlefield.findIndex((col) =>
-            col.includes(siegeCard),
-          );
+          const columnIndex = this.getColumnIndex(siegeCard);
           this.turrets[columnIndex].flames++;
           eventUpdater.fire("turret-update");
           // Check for game over
@@ -159,6 +158,10 @@ export class GameState {
       default:
         break;
     }
+  }
+
+  private getColumnIndex(card: BattlefieldCard) {
+    return this.battlefield.findIndex((col) => col.includes(card));
   }
 
   private finishResolveSiegeEngine = () => {

@@ -40,5 +40,9 @@
     width: 32px;
     border-radius: 50%;
     border: 1px dashed black;
+
+    &.flamed {
+      background-color: orangered;
+    }
   }
 }
