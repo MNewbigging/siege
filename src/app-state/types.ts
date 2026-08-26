@@ -70,6 +70,12 @@ export interface Turret {
   flames: number;
 }
 
+export interface EventCard {
+  name: string;
+  todoText: string;
+  //flavourText: string;
+}
+
 /**
 
   GAME FLOW CONSISTS OF 7 ROUNDS OF:
