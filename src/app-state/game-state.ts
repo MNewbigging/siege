@@ -1,5 +1,10 @@
 import { eventUpdater } from "../events/event-updater";
-import { makeSiegeDeck, makeTroopDeck, makeTurrets } from "./setup-utils";
+import {
+  makeEventDeck,
+  makeSiegeDeck,
+  makeTroopDeck,
+  makeTurrets,
+} from "./setup-utils";
 import {
   AttackType,
   BattlefieldCard,
@@ -11,6 +16,7 @@ import {
   isSiegeCard,
   Champion,
   Turret,
+  EventCard,
 } from "./types";
 import { diceRoll } from "./utils";
 ("./siege-engine-cards");
@@ -35,6 +41,7 @@ export class GameState {
   troopDeck: ITroopCard[];
   championDrawDeck: Champion[] = [];
   championDiscardDeck: Champion[] = [];
+  eventDeck: EventCard[];
   playerHand: ITroopCard[];
   battlefield: BattlefieldCard[][] = []; // by column, index 0 is front/vanguard
   activeDice: Dice[] = [];
@@ -47,6 +54,7 @@ export class GameState {
   currentlyResolvingSiegeEngine?: SiegeEngineCard;
   pendingDiceSelection?: PendingDiceSelection;
   pendingChampionSelection?: PendingChampionSelection;
+  currentlyResolvingEventCard?: EventCard;
 
   private strengthDice: number;
   private holyDice: number;
@@ -57,6 +65,7 @@ export class GameState {
     const troopDeck = makeTroopDeck();
     this.playerHand = troopDeck.splice(-2);
     this.troopDeck = troopDeck;
+    this.eventDeck = makeEventDeck();
     this.turrets = makeTurrets();
     this.battlefield = this.setupBattlefield();
     this.strengthDice = 3;
@@ -215,7 +224,10 @@ export class GameState {
 
         break;
       case RoundStage.C_ResolveEvent:
-        // Draw random event, show it
+        this.setStage(nextStage);
+        if (!this.eventDeck.length) this.eventDeck = makeEventDeck();
+        this.currentlyResolvingEventCard = this.eventDeck.pop();
+
         // Resolve effect
         // Move on
         break;

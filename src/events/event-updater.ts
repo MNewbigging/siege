@@ -4,7 +4,8 @@ export type GameEvent =
   | "dice-update"
   | "round-stage-update"
   | "champion-update"
-  | "turret-update";
+  | "turret-update"
+  | "event-update";
 
 type EventCallback = () => void;
 

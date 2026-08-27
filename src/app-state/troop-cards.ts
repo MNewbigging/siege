@@ -69,7 +69,7 @@ export const allTroopCards: ITroopCard[] = [
   {
     name: "Lycan Mage",
     type: AttackType.Holy,
-    effect: "Spend +2 Strength to overkill an adj card",
+    effect: "Spend +2 Strength to overkill an adjacent card",
     toDefeatA: { type: AttackType.Holy, value: 4 },
     toDefeatB: { type: AttackType.Strength, value: 4 },
   },

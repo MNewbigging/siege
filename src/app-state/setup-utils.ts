@@ -1,11 +1,7 @@
+import { eventCards } from "./event-cards";
 import { siegeEngineCards } from "./siege-engine-cards";
 import { allTroopCards } from "./troop-cards";
-import {
-  SiegeEngineCard,
-  SiegeEngineEffect,
-  ITroopCard,
-  Turret,
-} from "./types";
+import { SiegeEngineCard, ITroopCard, Turret } from "./types";
 import { shuffleArray, getCountOfAttackType } from "./utils";
 
 export function makeSiegeDeck() {
@@ -56,4 +52,14 @@ export function makeTroopDeck() {
 
 export function makeTurrets(): Turret[] {
   return Array.from({ length: 5 }, () => ({ flames: 0 }) as Turret);
+}
+
+export function makeEventDeck() {
+  // Make a copy of the event cards
+  const events = [...eventCards];
+
+  // Shuffle
+  shuffleArray(events);
+
+  return events;
 }
