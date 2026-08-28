@@ -227,6 +227,7 @@ export class GameState {
         this.setStage(nextStage);
         if (!this.eventDeck.length) this.eventDeck = makeEventDeck();
         this.currentlyResolvingEventCard = this.eventDeck.pop();
+        eventUpdater.fire("event-update");
 
         // Resolve effect
         // Move on

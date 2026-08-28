@@ -6,6 +6,7 @@ import { useEventUpdater } from "./hooks/use-event-updater";
 import { MainMenu } from "./main-menu/main-menu";
 import { PlayerBar } from "./player-bar/player-bar";
 import { TowerWall } from "./tower-wall/tower-wall";
+import { EventCardManager } from "./event-card/event-card-manager";
 
 export function App() {
   useEventUpdater("game-started");
@@ -19,6 +20,7 @@ export function App() {
         <TowerWall />
         <PlayerBar />
       </div>
+      <EventCardManager />
     </GameStateProvider>
   );
 }
