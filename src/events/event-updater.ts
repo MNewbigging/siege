@@ -5,7 +5,8 @@ export type GameEvent =
   | "round-stage-update"
   | "champion-update"
   | "turret-update"
-  | "event-update";
+  | "event-update"
+  | "troop-browser-update";
 
 type EventCallback = () => void;
 

@@ -32,6 +32,10 @@ interface PendingChampionSelection {
   onSelect: (champion: Champion) => void;
 }
 
+interface PendingTroopCardBrowser {
+  cards: ITroopCard[];
+}
+
 export class GameState {
   currentRound = 1;
   maxRounds = 7;
@@ -55,6 +59,7 @@ export class GameState {
   pendingDiceSelection?: PendingDiceSelection;
   pendingChampionSelection?: PendingChampionSelection;
   currentlyResolvingEventCard?: EventCard;
+  pendingTroopCardBrowser?: PendingTroopCardBrowser;
 
   private strengthDice: number;
   private holyDice: number;
@@ -175,6 +180,12 @@ export class GameState {
     // Can the event be resolved at all?
     switch (this.currentlyResolvingEventCard.name) {
       case EventCardName.DangerousVisions:
+        if (!this.troopDeck.length) {
+          this.finishResolveEventCard();
+          return;
+        }
+
+        this.setupTopTroopCardBrowser(6);
         break;
       case EventCardName.ShamansRitual:
         break;
@@ -213,6 +224,24 @@ export class GameState {
     }
   }
 
+  completeTroopCardBrowser(orderedCards: ITroopCard[]) {
+    if (!this.pendingTroopCardBrowser) return;
+
+    const browserCards = this.pendingTroopCardBrowser.cards;
+    const isSameSet =
+      orderedCards.length === browserCards.length &&
+      orderedCards.every((card) => browserCards.includes(card));
+
+    if (!isSameSet) throw new Error("Troop browser returned unexpected cards");
+
+    const remainingDeck = this.troopDeck.slice(0, -browserCards.length);
+    this.troopDeck = [...remainingDeck, ...orderedCards.slice().reverse()];
+    this.pendingTroopCardBrowser = undefined;
+    eventUpdater.fire("troop-browser-update");
+
+    this.finishResolveEventCard();
+  }
+
   private getColumnIndex(card: BattlefieldCard) {
     return this.battlefield.findIndex((col) => col.includes(card));
   }
@@ -247,6 +276,24 @@ export class GameState {
     return battlefield;
   }
 
+  private setupTopTroopCardBrowser(cardCount: number) {
+    const cards = this.troopDeck.slice(-cardCount).reverse();
+
+    if (!cards.length) {
+      this.finishResolveEventCard();
+      return;
+    }
+
+    this.pendingTroopCardBrowser = { cards };
+    eventUpdater.fire("troop-browser-update");
+  }
+
+  private finishResolveEventCard() {
+    this.currentlyResolvingEventCard = undefined;
+    eventUpdater.fire("event-update");
+    this.toStage(RoundStage.D_Action);
+  }
+
   private toStage(nextStage: RoundStage) {
     switch (nextStage) {
       case RoundStage.A_RollDice:
@@ -270,7 +317,10 @@ export class GameState {
       case RoundStage.C_ResolveEvent:
         this.setStage(nextStage);
         if (!this.eventDeck.length) this.eventDeck = makeEventDeck();
-        this.currentlyResolvingEventCard = this.eventDeck.pop();
+        this.currentlyResolvingEventCard =
+          this.eventDeck.find(
+            (card) => card.name === EventCardName.DangerousVisions,
+          ) ?? this.eventDeck.pop();
         eventUpdater.fire("event-update");
 
         // Resolve effect
