@@ -1,24 +1,32 @@
 .event-card-manager {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-
+  inset: 0;
+  z-index: 1000;
+  transition: background-color 250ms ease;
   display: flex;
   justify-content: center;
-  align-items: center;
 
-  &::before {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+  &.presenting {
+    align-items: center;
+    background-color: rgb(0 0 0 / 35%);
+    pointer-events: auto;
+  }
 
-    background-color: rgba(0, 0, 0, 0.247);
+  &.docked {
+    align-items: flex-end;
+    background-color: transparent;
 
-    z-index: -1;
+    .event-card {
+      margin-bottom: -160px;
+      transform: scale(0.8);
+      transition:
+        transform 250ms ease,
+        margin-bottom 250ms ease;
+
+      &:hover {
+        margin-bottom: 16px;
+        transform: scale(1);
+      }
+    }
   }
 }

@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useGameState } from "../game-state-context";
 import { useEventUpdater } from "../hooks/use-event-updater";
 import { EventCard } from "./event-card";
@@ -6,21 +7,32 @@ import "./event-card-manager.scss";
 export function EventCardManager() {
   useEventUpdater("event-update");
   const gameState = useGameState();
+  const [displayMode, setDisplayMode] = useState<
+    "presenting" | "docked" | undefined
+  >(undefined);
 
   // Check game-state for current card to show
   const eventCard = gameState.currentlyResolvingEventCard;
+
+  useEffect(() => {
+    // If the event card is there, we present it
+    if (eventCard) setDisplayMode("presenting");
+    // Otherwise it's been cleared so we reset
+    else setDisplayMode(undefined);
+  }, [eventCard]);
+
   if (!eventCard) return null;
 
-  // Bring to middle of screen, enlarged
+  function onClickScreen() {
+    // Acknowledge the presented card
+    if (displayMode === "presenting") setDisplayMode("docked");
+  }
+
+  const classes = ["event-card-manager", displayMode].join(" ");
+
   return (
-    <div className="event-card-manager">
-      <EventCard eventCard={eventCard} />;
+    <div className={classes} onClick={onClickScreen}>
+      <EventCard eventCard={eventCard} />
     </div>
   );
-
-  // Await touch on screen
-
-  // Move card above tower wall (tap/hover brings it back into middle enlarged)
-
-  // Begin resolve card effect
 }
