@@ -180,12 +180,7 @@ export class GameState {
     // Can the event be resolved at all?
     switch (this.currentlyResolvingEventCard.name) {
       case EventCardName.DangerousVisions:
-        if (!this.troopDeck.length) {
-          this.finishResolveEventCard();
-          return;
-        }
-
-        this.setupTopTroopCardBrowser(6);
+        this.setupTroopCardBrowser(6);
         break;
       case EventCardName.ShamansRitual:
         break;
@@ -276,7 +271,7 @@ export class GameState {
     return battlefield;
   }
 
-  private setupTopTroopCardBrowser(cardCount: number) {
+  private setupTroopCardBrowser(cardCount: number) {
     const cards = this.troopDeck.slice(-cardCount).reverse();
 
     if (!cards.length) {
