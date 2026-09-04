@@ -24,7 +24,10 @@ export function EventCardManager() {
   if (!eventCard) return null;
 
   function onClickScreen() {
-    // Acknowledge the presented card
+    if (displayMode !== "presenting") return;
+
+    // Begin to resolve the card
+
     if (displayMode === "presenting") setDisplayMode("docked");
   }
 

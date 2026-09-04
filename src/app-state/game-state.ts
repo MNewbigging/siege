@@ -1,4 +1,5 @@
 import { eventUpdater } from "../events/event-updater";
+import { EventCard, EventCardName } from "./event-cards";
 import {
   makeEventDeck,
   makeSiegeDeck,
@@ -16,7 +17,6 @@ import {
   isSiegeCard,
   Champion,
   Turret,
-  EventCard,
 } from "./types";
 import { diceRoll } from "./utils";
 ("./siege-engine-cards");
@@ -165,6 +165,50 @@ export class GameState {
         }
         break;
       default:
+        break;
+    }
+  }
+
+  beginResolveEventCard() {
+    if (!this.currentlyResolvingEventCard) return;
+
+    // Can the event be resolved at all?
+    switch (this.currentlyResolvingEventCard.name) {
+      case EventCardName.DangerousVisions:
+        break;
+      case EventCardName.ShamansRitual:
+        break;
+      case EventCardName.LuckyShot:
+        break;
+      case EventCardName.GargansBlessing:
+        break;
+      case EventCardName.Deserter:
+        break;
+      case EventCardName.Foresight:
+        break;
+      case EventCardName.ShoreWalls:
+        break;
+      case EventCardName.AccidentsHappen:
+        break;
+      case EventCardName.FinalPush:
+        break;
+      case EventCardName.TurretShudders:
+        break;
+      case EventCardName.SpellSickness:
+        break;
+      case EventCardName.FoolsRush:
+        break;
+      case EventCardName.UnifiedRites:
+        break;
+      case EventCardName.FriendsArrive:
+        break;
+      case EventCardName.BackForMore:
+        break;
+      case EventCardName.CampCrud:
+        break;
+      case EventCardName.TrainedWarriors:
+        break;
+      case EventCardName.BattleLust:
         break;
     }
   }
