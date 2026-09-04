@@ -26,9 +26,9 @@ export function EventCardManager() {
   function onClickScreen() {
     if (displayMode !== "presenting") return;
 
-    // Begin to resolve the card
+    gameState.beginResolveEventCard();
 
-    if (displayMode === "presenting") setDisplayMode("docked");
+    setDisplayMode("docked");
   }
 
   const classes = ["event-card-manager", displayMode].join(" ");

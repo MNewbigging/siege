@@ -1,4 +1,4 @@
-import { type EventCard } from "../../app-state/types";
+import { type EventCard } from "../../app-state/event-cards";
 import "./event-card.scss";
 
 interface EventCardProps {
