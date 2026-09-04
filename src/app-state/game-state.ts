@@ -1,5 +1,6 @@
 import { eventUpdater } from "../events/event-updater";
 import { EventCard, EventCardName } from "./event-cards";
+import { EventResolver } from "./event-resolver";
 import {
   makeEventDeck,
   makeSiegeDeck,
@@ -64,7 +65,13 @@ export class GameState {
   strengthDice: number;
   holyDice: number;
 
+  private siegeResolver: SiegeResolver;
+  private eventResolver: EventResolver;
+
   constructor() {
+    this.siegeResolver = new SiegeResolver(this);
+    this.eventResolver = new EventResolver(this);
+
     // Setup
     this.siegeDeck = makeSiegeDeck();
     const troopDeck = makeTroopDeck();
@@ -102,71 +109,17 @@ export class GameState {
     this.currentlyResolvingSiegeEngine = siegeCard;
     eventUpdater.fire("resolve-siege-engines");
 
-    const resolver = new SiegeResolver(this);
-    resolver.resolve(siegeCard);
+    this.siegeResolver.resolve(siegeCard);
   }
 
   beginResolveEventCard() {
     if (!this.currentlyResolvingEventCard) return;
 
-    // Can the event be resolved at all?
-    switch (this.currentlyResolvingEventCard.name) {
-      case EventCardName.DangerousVisions:
-        this.setupTroopCardBrowser(6);
-        break;
-      case EventCardName.ShamansRitual:
-        break;
-      case EventCardName.LuckyShot:
-        break;
-      case EventCardName.GargansBlessing:
-        break;
-      case EventCardName.Deserter:
-        break;
-      case EventCardName.Foresight:
-        break;
-      case EventCardName.ShoreWalls:
-        break;
-      case EventCardName.AccidentsHappen:
-        break;
-      case EventCardName.FinalPush:
-        break;
-      case EventCardName.TurretShudders:
-        break;
-      case EventCardName.SpellSickness:
-        break;
-      case EventCardName.FoolsRush:
-        break;
-      case EventCardName.UnifiedRites:
-        break;
-      case EventCardName.FriendsArrive:
-        break;
-      case EventCardName.BackForMore:
-        break;
-      case EventCardName.CampCrud:
-        break;
-      case EventCardName.TrainedWarriors:
-        break;
-      case EventCardName.BattleLust:
-        break;
-    }
+    this.eventResolver.resolve(this.currentlyResolvingEventCard);
   }
 
   completeTroopCardBrowser(orderedCards: ITroopCard[]) {
-    if (!this.pendingTroopCardBrowser) return;
-
-    const browserCards = this.pendingTroopCardBrowser.cards;
-    const isSameSet =
-      orderedCards.length === browserCards.length &&
-      orderedCards.every((card) => browserCards.includes(card));
-
-    if (!isSameSet) throw new Error("Troop browser returned unexpected cards");
-
-    const remainingDeck = this.troopDeck.slice(0, -browserCards.length);
-    this.troopDeck = [...remainingDeck, ...orderedCards.slice().reverse()];
-    this.pendingTroopCardBrowser = undefined;
-    eventUpdater.fire("troop-browser-update");
-
-    this.finishResolveEventCard();
+    this.eventResolver.completeTroopCardBrowser(orderedCards);
   }
 
   getColumnIndex(card: BattlefieldCard) {
@@ -192,24 +145,6 @@ export class GameState {
     }
 
     return battlefield;
-  }
-
-  private setupTroopCardBrowser(cardCount: number) {
-    const cards = this.troopDeck.slice(-cardCount).reverse();
-
-    if (!cards.length) {
-      this.finishResolveEventCard();
-      return;
-    }
-
-    this.pendingTroopCardBrowser = { cards };
-    eventUpdater.fire("troop-browser-update");
-  }
-
-  private finishResolveEventCard() {
-    this.currentlyResolvingEventCard = undefined;
-    eventUpdater.fire("event-update");
-    this.toStage(RoundStage.D_Action);
   }
 
   toStage(nextStage: RoundStage) {
