@@ -5,20 +5,6 @@ import { useEventUpdater } from "../hooks/use-event-updater";
 import { TroopCard } from "../troop-card/troop-card";
 import "./troop-card-browser.scss";
 
-function reorderCards(
-  cards: ITroopCard[],
-  sourceIndex: number,
-  targetIndex: number,
-) {
-  if (sourceIndex === targetIndex) return cards;
-
-  const nextCards = cards.slice();
-  const [movedCard] = nextCards.splice(sourceIndex, 1);
-  nextCards.splice(targetIndex, 0, movedCard);
-
-  return nextCards;
-}
-
 export function TroopCardBrowser() {
   useEventUpdater("troop-browser-update");
 
@@ -68,14 +54,14 @@ export function TroopCardBrowser() {
         <div className="browser-header">
           <div>
             <div className="eyebrow">Dangerous Visions</div>
-            <h2>Return troop cards in order</h2>
+            <h2>Return troop cards in any order</h2>
           </div>
           <button
             className="confirm-button"
             type="button"
             onClick={() => gameState.completeTroopCardBrowser(orderedCards)}
           >
-            Return cards
+            Accept
           </button>
         </div>
 
@@ -103,4 +89,18 @@ export function TroopCardBrowser() {
       </div>
     </div>
   );
+}
+
+function reorderCards(
+  cards: ITroopCard[],
+  sourceIndex: number,
+  targetIndex: number,
+) {
+  if (sourceIndex === targetIndex) return cards;
+
+  const nextCards = cards.slice();
+  const [movedCard] = nextCards.splice(sourceIndex, 1);
+  nextCards.splice(targetIndex, 0, movedCard);
+
+  return nextCards;
 }
