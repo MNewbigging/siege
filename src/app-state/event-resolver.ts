@@ -18,6 +18,7 @@ import {
   RoundStage,
   SiegeEngineCard,
   Turret,
+  isTroopCard,
 } from "./types";
 
 export class EventResolver {
@@ -88,6 +89,7 @@ export class EventResolver {
       case EventCardName.CampCrud:
         break;
       case EventCardName.TrainedWarriors:
+        this.trainedWarriors();
         break;
       case EventCardName.BattleLust:
         this.battleLust();
@@ -101,7 +103,7 @@ export class EventResolver {
 
     // Testing
     const testCardIndex = this.gameState.eventDeck.findIndex(
-      (card) => card.name === EventCardName.BattleLust,
+      (card) => card.name === EventCardName.TrainedWarriors,
     );
 
     if (testCardIndex >= 0)
@@ -375,6 +377,24 @@ export class EventResolver {
 
   private friendsArrive() {
     //
+  }
+
+  private trainedWarriors() {
+    const frontStrengthTroops: TroopCard[] = [];
+    this.gameState.battlefield.forEach((col) => {
+      const frontCard = col[0];
+      if (isTroopCard(frontCard) && frontCard.type === AttackType.Strength) {
+        frontStrengthTroops.push(frontCard);
+      }
+    });
+
+    frontStrengthTroops.forEach((troop) => {
+      troop.strengthTokens ??= 0;
+      troop.strengthTokens++;
+    });
+
+    eventUpdater.fire("troop-update");
+    this.finishResolveEventCard();
   }
 
   private battleLust() {
