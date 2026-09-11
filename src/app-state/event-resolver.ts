@@ -1,4 +1,8 @@
 import { eventUpdater } from "../events/event-updater";
+import {
+  getFarthestSiegeEngines,
+  getNearestSiegeEngines,
+} from "./battlefield-utils";
 import { EventCard, EventCardName } from "./event-cards";
 import type { GameState } from "./game-state";
 import { RequestResolver } from "./request-resolver";
@@ -57,8 +61,10 @@ export class EventResolver {
         this.shoreWalls(); // todo test when I have flames on turrets
         break;
       case EventCardName.AccidentsHappen:
+        this.accidentsHappen(); // todo test when I have champions
         break;
       case EventCardName.FinalPush:
+        this.finalPush();
         break;
       case EventCardName.TurretShudders:
         break;
@@ -87,7 +93,7 @@ export class EventResolver {
 
     // Testing
     const testCardIndex = this.gameState.eventDeck.findIndex(
-      (card) => card.name === EventCardName.Foresight,
+      (card) => card.name === EventCardName.GargansBlessing,
     );
 
     if (testCardIndex >= 0)
@@ -132,26 +138,9 @@ export class EventResolver {
 
   private shamansRitual() {
     // Get the farthest siege engine(s)
-    let farthestIndex = -1;
-    let farthestSiegeCards: SiegeEngineCard[] = [];
-
-    this.gameState.battlefield.forEach((col) => {
-      // Start at the end
-      for (let i = col.length - 1; i >= 0; i--) {
-        const card = col[i];
-        if (!isSiegeCard(card)) continue;
-
-        // Found the first topmost siege card of the column now
-        if (i === farthestIndex) {
-          farthestSiegeCards.push(card);
-        } else if (i > farthestIndex) {
-          farthestSiegeCards = [card];
-          farthestIndex = i;
-        }
-
-        break;
-      }
-    });
+    const farthestSiegeCards = getFarthestSiegeEngines(
+      this.gameState.battlefield,
+    );
 
     // On select, add 2 magic tokens
     const onSelect = (siegeCard: SiegeEngineCard) => {
@@ -203,23 +192,7 @@ export class EventResolver {
 
   private gargansBlessing() {
     // Get the nearest siege engine
-    let nearestIndex = 4;
-    let nearestSiegeCards: SiegeEngineCard[] = [];
-
-    this.gameState.battlefield.forEach((col) => {
-      for (let i = 0; i < col.length; i++) {
-        const card = col[i];
-        if (!isSiegeCard(card)) continue;
-
-        if (i === nearestIndex) nearestSiegeCards.push(card);
-        else if (i < nearestIndex) {
-          nearestSiegeCards = [card];
-          nearestIndex = i;
-        }
-
-        break;
-      }
-    });
+    let nearestSiegeCards = getNearestSiegeEngines(this.gameState.battlefield);
 
     // On select, add 2 magic tokens
     const onSelect = (siegeCard: SiegeEngineCard) => {
@@ -295,5 +268,17 @@ export class EventResolver {
       onSelect,
     };
     eventUpdater.fire("turret-update");
+  }
+
+  private accidentsHappen() {
+    this.requestResolver.setupChampionFlipRequest(() =>
+      this.requestResolver.setupChampionFlipRequest(
+        this.finishResolveEventCard,
+      ),
+    );
+  }
+
+  private finalPush() {
+    //
   }
 }
