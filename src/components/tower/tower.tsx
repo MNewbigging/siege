@@ -1,4 +1,5 @@
 import { Turret } from "../../app-state/types";
+import { useGameState } from "../game-state-context";
 import { useEventUpdater } from "../hooks/use-event-updater";
 import "./tower.scss";
 
@@ -10,8 +11,20 @@ interface TowerProps {
 export function Tower({ turret }: TowerProps) {
   useEventUpdater("turret-update");
 
+  const gameState = useGameState();
+  const isValidChoice =
+    gameState.pendingTurretSelection?.validChoices.includes(turret);
+
+  function onClick() {
+    if (isValidChoice) {
+      gameState.pendingTurretSelection?.onSelect(turret);
+    }
+  }
+
+  const classes = ["tower", isValidChoice ? "active" : ""];
+
   return (
-    <div className="tower">
+    <div className={classes.join(" ")} onClick={onClick}>
       <div className="top-area">
         <DamageMarker hasFlame={turret.flames >= 1} />
         <DamageMarker hasFlame={turret.flames >= 2} />

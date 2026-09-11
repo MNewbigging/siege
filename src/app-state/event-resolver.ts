@@ -67,6 +67,7 @@ export class EventResolver {
         this.finalPush();
         break;
       case EventCardName.TurretShudders:
+        this.turretShudders();
         break;
       case EventCardName.SpellSickness:
         break;
@@ -93,7 +94,7 @@ export class EventResolver {
 
     // Testing
     const testCardIndex = this.gameState.eventDeck.findIndex(
-      (card) => card.name === EventCardName.FinalPush,
+      (card) => card.name === EventCardName.TurretShudders,
     );
 
     if (testCardIndex >= 0)
@@ -297,5 +298,26 @@ export class EventResolver {
       onSelect,
     };
     eventUpdater.fire("siege-engine-update");
+  }
+
+  private turretShudders() {
+    const validChoices = this.gameState.turrets.filter(
+      (turret) => turret.flames < 3,
+    );
+
+    if (!validChoices.length) {
+      this.finishResolveEventCard();
+      return;
+    }
+
+    const onSelect = (turret: Turret) => {
+      turret.flames++;
+      this.gameState.pendingTurretSelection = undefined;
+      eventUpdater.fire("turret-update");
+      this.finishResolveEventCard();
+    };
+
+    this.gameState.pendingTurretSelection = { validChoices, onSelect };
+    eventUpdater.fire("turret-update");
   }
 }
