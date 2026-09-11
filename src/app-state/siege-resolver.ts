@@ -4,6 +4,7 @@ import {
   AttackType,
   Champion,
   Dice,
+  isSiegeCard,
   RoundStage,
   SiegeEngineCard,
   SiegeEngineEffect,
@@ -11,9 +12,16 @@ import {
 import { diceRoll } from "./utils";
 
 export class SiegeResolver {
+  private siegeEnginesToResolve: SiegeEngineCard[] = [];
+
   constructor(private gameState: GameState) {}
 
-  resolve(siegeCard: SiegeEngineCard) {
+  resolveEngines() {
+    this.siegeEnginesToResolve = this.getSiegeEnginesToResolve();
+    this.setupNextSiegeToResolve();
+  }
+
+  private resolve(siegeCard: SiegeEngineCard) {
     switch (siegeCard.effect) {
       case SiegeEngineEffect.Ballista:
         this.setupDiceForfeitRequest(() => {
@@ -87,13 +95,46 @@ export class SiegeResolver {
     }
   }
 
+  private getSiegeEnginesToResolve() {
+    const toResolve: SiegeEngineCard[] = [];
+    this.gameState.battlefield.forEach((col) => {
+      col.forEach((rowCard, rowIndex) => {
+        if (isSiegeCard(rowCard) && rowCard.rowData[rowIndex].isActive) {
+          toResolve.push(rowCard);
+        }
+      });
+    });
+
+    return toResolve;
+  }
+
+  private setupNextSiegeToResolve() {
+    const leftmost = this.siegeEnginesToResolve.shift();
+    if (!leftmost) {
+      this.gameState.toStage(RoundStage.C_ResolveEvent);
+      return;
+    }
+
+    this.gameState.pendingSiegeSelection = {
+      validChoices: [leftmost],
+      onSelect: (siegeCard) => this.resolve(siegeCard),
+    };
+    eventUpdater.fire("siege-engine-update");
+  }
+
   private finishResolveSiegeEngine = () => {
-    this.gameState.currentlyResolvingSiegeEngine = undefined;
-    eventUpdater.fire("resolve-siege-engines");
+    // Done with the current siege selection
+    this.gameState.pendingSiegeSelection = undefined;
+    eventUpdater.fire("siege-engine-update");
 
     // Was this the last one to resolve?
-    if (!this.gameState.siegeEnginesToResolve.length)
+    if (!this.siegeEnginesToResolve.length) {
       this.gameState.toStage(RoundStage.C_ResolveEvent);
+      return;
+    }
+
+    // Otherwise, prep the next one
+    this.setupNextSiegeToResolve();
   };
 
   private setupDiceForfeitRequest(onComplete: () => void) {

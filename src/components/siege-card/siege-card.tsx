@@ -11,10 +11,7 @@ interface SiegeCardProps {
 
 export function SiegeCard({ card }: SiegeCardProps) {
   const gameState = useGameState();
-  useEventUpdater("resolve-siege-engines", "siege-engine-update");
-
-  const isActive = gameState.currentlyResolvingSiegeEngine === card;
-  const isQueued = gameState.siegeEnginesToResolve.includes(card);
+  useEventUpdater("siege-engine-update");
 
   const isValidChoice =
     gameState.pendingSiegeSelection?.validChoices.includes(card);
@@ -22,8 +19,6 @@ export function SiegeCard({ card }: SiegeCardProps) {
   function onClick() {
     if (isValidChoice) {
       gameState.pendingSiegeSelection?.onSelect(card);
-    } else if (isQueued) {
-      gameState.beginResolveSiegeEngine(card);
     }
   }
 
@@ -40,8 +35,7 @@ export function SiegeCard({ card }: SiegeCardProps) {
 
   const cardClasses = [
     "siege-card",
-    isActive || isValidChoice ? "highlight-active" : "",
-    isQueued ? "highlight-queued" : "",
+    isValidChoice || isValidChoice ? "highlight-active" : "",
   ];
 
   if (card.magicTokens) console.log("got magic tokens", card.magicTokens);

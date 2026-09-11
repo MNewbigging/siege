@@ -15,7 +15,6 @@ import {
   RoundStage,
   SiegeEngineCard,
   ITroopCard,
-  isSiegeCard,
   Champion,
   Turret,
 } from "./types";
@@ -59,11 +58,9 @@ export class GameState {
   turrets: Turret[];
 
   // Transient
-  siegeEnginesToResolve: SiegeEngineCard[] = [];
-  currentlyResolvingSiegeEngine?: SiegeEngineCard; // should this be pending siege selection instead?
   pendingDiceSelection?: PendingDiceSelection;
   pendingChampionSelection?: PendingChampionSelection;
-  currentlyResolvingEventCard?: EventCard;
+  currentlyResolvingEventCard?: EventCard; // todo move to event resolver
   pendingTroopCardBrowser?: PendingTroopCardBrowser;
   pendingSiegeSelection?: PendingSiegeSelection;
 
@@ -101,20 +98,6 @@ export class GameState {
     eventUpdater.fire("dice-update");
 
     this.toStage(RoundStage.B_ResolveSiege);
-  }
-
-  beginResolveSiegeEngine(siegeCard: SiegeEngineCard) {
-    // If currently resolving another card, stop
-    if (this.currentlyResolvingSiegeEngine !== undefined) return;
-
-    // Remove from array and keep in separate prop
-    this.siegeEnginesToResolve = this.siegeEnginesToResolve.filter(
-      (card) => card !== siegeCard,
-    );
-    this.currentlyResolvingSiegeEngine = siegeCard;
-    eventUpdater.fire("resolve-siege-engines");
-
-    this.siegeResolver.resolve(siegeCard);
   }
 
   beginResolveEventCard() {
@@ -159,17 +142,9 @@ export class GameState {
         // Await player rolling dice
         break;
       case RoundStage.B_ResolveSiege:
-        // Determine engines to resolve
-        this.siegeEnginesToResolve = this.getSiegeEnginesToResolve();
-
-        // If there are none, can move onto next stage
-        if (!this.siegeEnginesToResolve.length) {
-          this.toStage(RoundStage.C_ResolveEvent);
-          return; // Prevents continuing after above toStage is done
-        }
-
+        // We're now resolving siege engines
         this.setStage(nextStage);
-        eventUpdater.fire("resolve-siege-engines");
+        this.siegeResolver.resolveEngines();
 
         break;
       case RoundStage.C_ResolveEvent:
@@ -181,8 +156,6 @@ export class GameState {
           ) ?? this.eventDeck.pop();
         eventUpdater.fire("event-update");
 
-        // Resolve effect
-        // Move on
         break;
     }
   }
@@ -190,19 +163,6 @@ export class GameState {
   private setStage(stage: RoundStage) {
     this.roundStage = stage;
     eventUpdater.fire("round-stage-update");
-  }
-
-  private getSiegeEnginesToResolve() {
-    const toResolve: SiegeEngineCard[] = [];
-    this.battlefield.forEach((col) => {
-      col.forEach((rowCard, rowIndex) => {
-        if (isSiegeCard(rowCard) && rowCard.rowData[rowIndex].isActive) {
-          toResolve.push(rowCard);
-        }
-      });
-    });
-
-    return toResolve;
   }
 
   gameOver() {

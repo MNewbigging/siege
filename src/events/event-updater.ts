@@ -1,6 +1,5 @@
 export type GameEvent =
   | "game-started"
-  | "resolve-siege-engines" // todo can i use siege-engine-update instead?
   | "dice-update"
   | "round-stage-update"
   | "champion-update"
