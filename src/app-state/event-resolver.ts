@@ -1,14 +1,22 @@
 import { eventUpdater } from "../events/event-updater";
 import { EventCard, EventCardName } from "./event-cards";
 import type { GameState } from "./game-state";
+import { RequestResolver } from "./request-resolver";
 import { makeEventDeck } from "./setup-utils";
 import { SiegeResolver } from "./siege-resolver";
-import { isSiegeCard, ITroopCard, RoundStage, SiegeEngineCard } from "./types";
+import {
+  AttackType,
+  isSiegeCard,
+  ITroopCard,
+  RoundStage,
+  SiegeEngineCard,
+} from "./types";
 
 export class EventResolver {
   constructor(
     private gameState: GameState,
     private siegeResolver: SiegeResolver,
+    private requestResolver: RequestResolver,
   ) {}
 
   resolveEvent() {
@@ -39,6 +47,7 @@ export class EventResolver {
         this.gargansBlessing();
         break;
       case EventCardName.Deserter:
+        this.deserter();
         break;
       case EventCardName.Foresight:
         break;
@@ -75,17 +84,17 @@ export class EventResolver {
 
     // Testing
     const testCard = this.gameState.eventDeck.find(
-      (card) => card.name === EventCardName.GargansBlessing,
+      (card) => card.name === EventCardName.Deserter,
     );
 
     return testCard ?? this.gameState.eventDeck.pop()!;
   }
 
-  private finishResolveEventCard() {
+  private finishResolveEventCard = () => {
     this.gameState.pendingEventSelection = undefined;
     eventUpdater.fire("event-update");
     this.gameState.toStage(RoundStage.D_Action);
-  }
+  };
 
   private dangerousVisions() {
     const cardCount = 6;
@@ -222,5 +231,12 @@ export class EventResolver {
       onSelect,
     };
     eventUpdater.fire("siege-engine-update");
+  }
+
+  private deserter() {
+    this.requestResolver.setupDiceSpendRequest({
+      type: AttackType.Strength,
+      onComplete: this.finishResolveEventCard,
+    });
   }
 }

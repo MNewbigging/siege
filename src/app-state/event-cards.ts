@@ -44,7 +44,7 @@ export const eventCards: EventCard[] = [
   },
   {
     name: EventCardName.Deserter,
-    todoText: "Move one active strength dice to your dice pool.",
+    todoText: "Move one active strength dice to your spent dice pool.",
   },
   {
     name: EventCardName.Foresight,

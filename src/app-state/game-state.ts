@@ -1,6 +1,7 @@
 import { eventUpdater } from "../events/event-updater";
 import { EventCard } from "./event-cards";
 import { EventResolver } from "./event-resolver";
+import { RequestResolver } from "./request-resolver";
 import {
   makeEventDeck,
   makeSiegeDeck,
@@ -73,12 +74,18 @@ export class GameState {
   strengthDice: number;
   holyDice: number;
 
+  private requestResolver: RequestResolver;
   private siegeResolver: SiegeResolver;
   private eventResolver: EventResolver;
 
   constructor() {
-    this.siegeResolver = new SiegeResolver(this);
-    this.eventResolver = new EventResolver(this, this.siegeResolver);
+    this.requestResolver = new RequestResolver(this);
+    this.siegeResolver = new SiegeResolver(this, this.requestResolver);
+    this.eventResolver = new EventResolver(
+      this,
+      this.siegeResolver,
+      this.requestResolver,
+    );
 
     // Setup
     this.siegeDeck = makeSiegeDeck();
