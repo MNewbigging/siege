@@ -42,6 +42,11 @@ interface PendingTroopCardBrowser {
   onAccept: (cards: ITroopCard[]) => void;
 }
 
+interface PendingEventCardBrowser {
+  cards: EventCard[];
+  onAccept: (cards: EventCard[]) => void;
+}
+
 interface PendingEventSelection {
   eventCard: EventCard;
   onSelect: () => void;
@@ -68,6 +73,7 @@ export class GameState {
   pendingDiceSelection?: PendingDiceSelection;
   pendingChampionSelection?: PendingChampionSelection;
   pendingTroopCardBrowser?: PendingTroopCardBrowser;
+  pendingEventCardBrowser?: PendingEventCardBrowser;
   pendingSiegeSelection?: PendingSiegeSelection;
   pendingEventSelection?: PendingEventSelection;
 

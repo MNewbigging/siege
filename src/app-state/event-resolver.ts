@@ -50,6 +50,7 @@ export class EventResolver {
         this.deserter();
         break;
       case EventCardName.Foresight:
+        this.foresight();
         break;
       case EventCardName.ShoreWalls:
         break;
@@ -83,11 +84,14 @@ export class EventResolver {
       this.gameState.eventDeck = makeEventDeck();
 
     // Testing
-    const testCard = this.gameState.eventDeck.find(
-      (card) => card.name === EventCardName.Deserter,
+    const testCardIndex = this.gameState.eventDeck.findIndex(
+      (card) => card.name === EventCardName.Foresight,
     );
 
-    return testCard ?? this.gameState.eventDeck.pop()!;
+    if (testCardIndex >= 0)
+      return this.gameState.eventDeck.splice(testCardIndex, 1)[0];
+
+    return this.gameState.eventDeck.pop()!;
   }
 
   private finishResolveEventCard = () => {
@@ -238,5 +242,32 @@ export class EventResolver {
       type: AttackType.Strength,
       onComplete: this.finishResolveEventCard,
     });
+  }
+
+  private foresight() {
+    const cardCount = 3;
+
+    if (this.gameState.eventDeck.length < cardCount)
+      this.gameState.eventDeck = makeEventDeck();
+
+    const cards = this.gameState.eventDeck.slice(-cardCount).reverse();
+
+    const onAccept = (orderedCards: EventCard[]) => {
+      const remainingDeck = this.gameState.eventDeck.slice(
+        0,
+        -orderedCards.length,
+      );
+      this.gameState.eventDeck = [
+        ...remainingDeck,
+        ...orderedCards.slice().reverse(),
+      ];
+      this.gameState.pendingEventCardBrowser = undefined;
+      eventUpdater.fire("event-browser-update");
+
+      this.finishResolveEventCard();
+    };
+
+    this.gameState.pendingEventCardBrowser = { cards, onAccept };
+    eventUpdater.fire("event-browser-update");
   }
 }

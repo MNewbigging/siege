@@ -7,6 +7,7 @@ import { MainMenu } from "./main-menu/main-menu";
 import { PlayerBar } from "./player-bar/player-bar";
 import { TowerWall } from "./tower-wall/tower-wall";
 import { EventCardManager } from "./event-card/event-card-manager";
+import { EventCardBrowser } from "./event-card-browser/event-card-browser";
 import { TroopCardBrowser } from "./troop-card-browser/troop-card-browser";
 
 export function App() {
@@ -23,6 +24,7 @@ export function App() {
       </div>
       <EventCardManager />
       <TroopCardBrowser />
+      <EventCardBrowser />
     </GameStateProvider>
   );
 }
