@@ -2,10 +2,14 @@ import { eventUpdater } from "../events/event-updater";
 import { EventCard, EventCardName } from "./event-cards";
 import type { GameState } from "./game-state";
 import { makeEventDeck } from "./setup-utils";
+import { SiegeResolver } from "./siege-resolver";
 import { isSiegeCard, ITroopCard, RoundStage, SiegeEngineCard } from "./types";
 
 export class EventResolver {
-  constructor(private gameState: GameState) {}
+  constructor(
+    private gameState: GameState,
+    private siegeResolver: SiegeResolver,
+  ) {}
 
   resolveEvent() {
     const eventCard = this.getNextEventCard();
@@ -23,12 +27,13 @@ export class EventResolver {
   private resolve(eventCard: EventCard) {
     switch (eventCard.name) {
       case EventCardName.DangerousVisions:
-        this.setupTroopCardBrowser(6); // todo test it works when troop cards can be drawn into battlefield
+        this.dangerousVisions(); // todo test it works when troop cards can be drawn into battlefield
         break;
       case EventCardName.ShamansRitual:
         this.shamansRitual();
         break;
       case EventCardName.LuckyShot:
+        this.luckyShot();
         break;
       case EventCardName.GargansBlessing:
         break;
@@ -69,7 +74,7 @@ export class EventResolver {
 
     // Testing
     const testCard = this.gameState.eventDeck.find(
-      (card) => card.name === EventCardName.DangerousVisions,
+      (card) => card.name === EventCardName.LuckyShot,
     );
 
     return testCard ?? this.gameState.eventDeck.pop()!;
@@ -81,7 +86,8 @@ export class EventResolver {
     this.gameState.toStage(RoundStage.D_Action);
   }
 
-  private setupTroopCardBrowser(cardCount: number) {
+  private dangerousVisions() {
+    const cardCount = 6;
     const cards = this.gameState.troopDeck.slice(-cardCount).reverse();
 
     if (!cards.length) {
@@ -149,6 +155,35 @@ export class EventResolver {
       validChoices: farthestSiegeCards,
       onSelect,
     };
+    eventUpdater.fire("siege-engine-update");
+  }
+
+  private luckyShot() {
+    // Get siege engines that are inactive right now
+    const inactive: SiegeEngineCard[] = [];
+    this.gameState.battlefield.forEach((col) => {
+      col.forEach((rowCard, rowIndex) => {
+        if (isSiegeCard(rowCard) && !rowCard.rowData[rowIndex].isActive)
+          inactive.push(rowCard);
+      });
+    });
+
+    if (!inactive.length) {
+      this.finishResolveEventCard();
+      return;
+    }
+
+    const onSelect = (siegeCard: SiegeEngineCard) => {
+      this.gameState.pendingSiegeSelection = undefined;
+      eventUpdater.fire("siege-engine-update");
+
+      // Resolve this siege engine outside the normal siege-stage flow
+      this.siegeResolver.resolve(siegeCard, () =>
+        this.finishResolveEventCard(),
+      );
+    };
+
+    this.gameState.pendingSiegeSelection = { validChoices: inactive, onSelect };
     eventUpdater.fire("siege-engine-update");
   }
 }

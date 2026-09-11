@@ -33,10 +33,7 @@ export function SiegeCard({ card }: SiegeCardProps) {
     );
   });
 
-  const cardClasses = [
-    "siege-card",
-    isValidChoice || isValidChoice ? "highlight-active" : "",
-  ];
+  const cardClasses = ["siege-card", isValidChoice ? "highlight-active" : ""];
 
   if (card.magicTokens) console.log("got magic tokens", card.magicTokens);
 

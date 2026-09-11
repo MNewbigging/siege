@@ -78,7 +78,7 @@ export class GameState {
 
   constructor() {
     this.siegeResolver = new SiegeResolver(this);
-    this.eventResolver = new EventResolver(this);
+    this.eventResolver = new EventResolver(this, this.siegeResolver);
 
     // Setup
     this.siegeDeck = makeSiegeDeck();

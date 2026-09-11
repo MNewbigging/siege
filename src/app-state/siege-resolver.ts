@@ -21,11 +21,11 @@ export class SiegeResolver {
     this.setupNextSiegeToResolve();
   }
 
-  private resolve(siegeCard: SiegeEngineCard) {
+  resolve(siegeCard: SiegeEngineCard, onComplete: () => void) {
     switch (siegeCard.effect) {
       case SiegeEngineEffect.Ballista:
         this.setupDiceForfeitRequest(() => {
-          this.setupChampionDiscardRequest(this.finishResolveSiegeEngine);
+          this.setupChampionDiscardRequest(onComplete);
         });
         break;
       case SiegeEngineEffect.BatteringRam:
@@ -34,17 +34,17 @@ export class SiegeResolver {
           if (dice.type === AttackType.Strength && dice.value > 1) dice.value--;
         });
         eventUpdater.fire("dice-update");
-        this.finishResolveSiegeEngine();
+        onComplete();
         break;
       case SiegeEngineEffect.BreachTower:
         // todo
         break;
       case SiegeEngineEffect.Catapult:
-        this.setupDiceRerollRequest(6, this.finishResolveSiegeEngine);
+        this.setupDiceRerollRequest(6, onComplete);
         break;
       case SiegeEngineEffect.FlamingRain:
         this.setupChampionDiscardRequest(() => {
-          this.setupChampionFlipRequest(this.finishResolveSiegeEngine);
+          this.setupChampionFlipRequest(onComplete);
         });
         break;
       case SiegeEngineEffect.GargansEye:
@@ -53,13 +53,13 @@ export class SiegeResolver {
           onComplete: () => {
             this.setupDiceSpendRequest({
               type: AttackType.Holy,
-              onComplete: this.finishResolveSiegeEngine,
+              onComplete,
             });
           },
         });
         break;
       case SiegeEngineEffect.Incendiaries:
-        this.setupDiceRerollRequest(5, this.finishResolveSiegeEngine);
+        this.setupDiceRerollRequest(5, onComplete);
         break;
       case SiegeEngineEffect.OgresReach:
         {
@@ -68,13 +68,13 @@ export class SiegeResolver {
           eventUpdater.fire("turret-update");
           if (this.gameState.turrets[columnIndex].flames >= 4)
             this.gameState.gameOver();
-          else this.finishResolveSiegeEngine();
+          else onComplete();
         }
         break;
       case SiegeEngineEffect.Spinblade:
         this.setupDiceSpendRequest({
           onComplete: () => {
-            this.setupDiceRerollRequest(4, this.finishResolveSiegeEngine);
+            this.setupDiceRerollRequest(4, onComplete);
           },
         });
         break;
@@ -87,7 +87,7 @@ export class SiegeResolver {
           // Check for game over
           if (this.gameState.turrets[columnIndex].flames >= 4)
             this.gameState.gameOver();
-          else this.finishResolveSiegeEngine();
+          else onComplete();
         }
         break;
       default:
@@ -117,7 +117,8 @@ export class SiegeResolver {
 
     this.gameState.pendingSiegeSelection = {
       validChoices: [leftmost],
-      onSelect: (siegeCard) => this.resolve(siegeCard),
+      onSelect: (siegeCard) =>
+        this.resolve(siegeCard, this.finishResolveSiegeEngine),
     };
     eventUpdater.fire("siege-engine-update");
   }
