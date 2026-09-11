@@ -2,6 +2,7 @@ import { eventUpdater } from "../events/event-updater";
 import {
   getFarthestSiegeEngines,
   getNearestSiegeEngines,
+  getStrongestFrontTroops,
   getTroopsByType,
   getWeakestFrontTroops,
 } from "./battlefield-utils";
@@ -89,6 +90,7 @@ export class EventResolver {
       case EventCardName.TrainedWarriors:
         break;
       case EventCardName.BattleLust:
+        this.battleLust();
         break;
     }
   }
@@ -99,7 +101,7 @@ export class EventResolver {
 
     // Testing
     const testCardIndex = this.gameState.eventDeck.findIndex(
-      (card) => card.name === EventCardName.UnifiedRites,
+      (card) => card.name === EventCardName.BattleLust,
     );
 
     if (testCardIndex >= 0)
@@ -369,5 +371,31 @@ export class EventResolver {
 
     eventUpdater.fire("troop-update");
     this.finishResolveEventCard();
+  }
+
+  private friendsArrive() {
+    //
+  }
+
+  private battleLust() {
+    const strongestTroops = getStrongestFrontTroops(this.gameState.battlefield);
+    if (!strongestTroops.length) {
+      this.finishResolveEventCard();
+      return;
+    }
+
+    const onSelect = (troop: TroopCard) => {
+      troop.strengthTokens ??= 0;
+      troop.strengthTokens += 2;
+      this.gameState.pendingTroopSelection = undefined;
+      eventUpdater.fire("troop-update");
+      this.finishResolveEventCard();
+    };
+
+    this.gameState.pendingTroopSelection = {
+      validChoices: strongestTroops,
+      onSelect,
+    };
+    eventUpdater.fire("troop-update");
   }
 }

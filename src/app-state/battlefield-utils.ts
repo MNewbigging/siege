@@ -74,7 +74,7 @@ function getFrontTroopsAtValueExtreme(
 
   battlefield.forEach((column) => {
     const card = column[0];
-    if (!isTroopCard(card)) return;
+    if (!isTroopCard(card) || card.type !== AttackType.Strength) return;
 
     const value = getTroopDefeatValue(card);
     if (selectedValue === undefined || isBetterValue(value, selectedValue)) {
