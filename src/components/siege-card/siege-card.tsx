@@ -3,6 +3,7 @@ import { SiegeEngineCard } from "../../app-state/types";
 import "./siege-card.scss";
 import { useEventUpdater } from "../hooks/use-event-updater";
 import { useGameState } from "../game-state-context";
+import { TokensDisplay } from "../tokens-display/tokens-display";
 
 interface SiegeCardProps {
   card: SiegeEngineCard;
@@ -43,10 +44,13 @@ export function SiegeCard({ card }: SiegeCardProps) {
     isQueued ? "highlight-queued" : "",
   ];
 
+  if (card.magicTokens) console.log("got magic tokens", card.magicTokens);
+
   return (
     <div className={cardClasses.join(" ")} onClick={onClick}>
       <div className="body">
         <div className="ranges">{ranges}</div>
+        {card.magicTokens && <TokensDisplay magicTokens={card.magicTokens} />}
         <div className="name">{card.name}</div>
       </div>
       <div className="effect-bar">{card.effect}</div>

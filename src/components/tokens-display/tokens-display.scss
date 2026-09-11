@@ -1,0 +1,24 @@
+.tokens-display {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 2px;
+
+  .tokens {
+    display: flex;
+    gap: 2px;
+  }
+}
+
+.token {
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+
+  &.strength {
+    background-color: orangered;
+  }
+
+  &.magic {
+    background-color: cyan;
+  }
+}
