@@ -4,6 +4,7 @@ import {
   isTroopCard,
   TroopCard,
   SiegeEngineCard,
+  AttackType,
 } from "./types";
 
 // Removes a card in place, leaving an empty (undefined) slot rather than shifting the column
@@ -114,4 +115,21 @@ function getSiegeEnginesAtRowExtreme(
   });
 
   return selectedCards;
+}
+
+export function getTroopsByType(
+  battlefield: BattlefieldCard[][],
+  type: AttackType,
+) {
+  const troops: TroopCard[] = [];
+
+  battlefield.forEach((col) => {
+    col.forEach((rowCard) => {
+      if (isTroopCard(rowCard) && rowCard.type === type) {
+        troops.push(rowCard);
+      }
+    });
+  });
+
+  return troops;
 }

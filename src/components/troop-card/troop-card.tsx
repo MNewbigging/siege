@@ -31,8 +31,11 @@ export function TroopCard({ card }: TroopCardProps) {
           <DiceReq dice={card.toDefeatA} />
           {card.toDefeatB && <DiceReq dice={card.toDefeatB} />}
         </div>
-        {card.strengthTokens && (
-          <TokensDisplay strengthTokens={card.strengthTokens} />
+        {(card.magicTokens || card.strengthTokens) && (
+          <TokensDisplay
+            magicTokens={card.magicTokens}
+            strengthTokens={card.strengthTokens}
+          />
         )}
         <div className="name">{card.name}</div>
       </div>

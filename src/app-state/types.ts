@@ -14,6 +14,7 @@ export interface TroopCard {
   effect: string;
   toDefeatA: Dice;
   toDefeatB?: Dice;
+  magicTokens?: number;
   strengthTokens?: number;
 }
 

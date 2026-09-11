@@ -2,6 +2,7 @@ import { eventUpdater } from "../events/event-updater";
 import {
   getFarthestSiegeEngines,
   getNearestSiegeEngines,
+  getTroopsByType,
   getWeakestFrontTroops,
 } from "./battlefield-utils";
 import { EventCard, EventCardName } from "./event-cards";
@@ -77,6 +78,7 @@ export class EventResolver {
         this.foolsRush();
         break;
       case EventCardName.UnifiedRites:
+        this.unifiedRites();
         break;
       case EventCardName.FriendsArrive:
         break;
@@ -97,7 +99,7 @@ export class EventResolver {
 
     // Testing
     const testCardIndex = this.gameState.eventDeck.findIndex(
-      (card) => card.name === EventCardName.FoolsRush,
+      (card) => card.name === EventCardName.UnifiedRites,
     );
 
     if (testCardIndex >= 0)
@@ -352,5 +354,20 @@ export class EventResolver {
       onSelect,
     };
     eventUpdater.fire("troop-update");
+  }
+
+  private unifiedRites() {
+    const magicTroops = getTroopsByType(
+      this.gameState.battlefield,
+      AttackType.Holy,
+    );
+
+    magicTroops.forEach((troop) => {
+      troop.magicTokens ??= 0;
+      troop.magicTokens++;
+    });
+
+    eventUpdater.fire("troop-update");
+    this.finishResolveEventCard();
   }
 }
