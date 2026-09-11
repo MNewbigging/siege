@@ -60,7 +60,7 @@ export class RequestResolver {
       onComplete();
     };
 
-    this.gameState.pendingDiceSelection = { onSelect };
+    this.gameState.pendingDiceSelection = { type, onSelect };
     eventUpdater.fire("dice-update");
   }
 
