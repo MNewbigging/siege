@@ -10,6 +10,7 @@ import {
   ITroopCard,
   RoundStage,
   SiegeEngineCard,
+  Turret,
 } from "./types";
 
 export class EventResolver {
@@ -53,7 +54,7 @@ export class EventResolver {
         this.foresight();
         break;
       case EventCardName.ShoreWalls:
-        this.shoreWalls();
+        this.shoreWalls(); // todo test when I have flames on turrets
         break;
       case EventCardName.AccidentsHappen:
         break;
@@ -191,7 +192,6 @@ export class EventResolver {
       this.gameState.pendingSiegeSelection = undefined;
       eventUpdater.fire("siege-engine-update");
 
-      // Resolve this siege engine outside the normal siege-stage flow
       this.siegeResolver.resolve(siegeCard, () =>
         this.finishResolveEventCard(),
       );
@@ -272,5 +272,28 @@ export class EventResolver {
     eventUpdater.fire("event-browser-update");
   }
 
-  private shoreWalls() {}
+  private shoreWalls() {
+    // Get all turrets which have at least 1 flame
+    const enflamedTurrets = this.gameState.turrets.filter(
+      (turret) => turret.flames > 0,
+    );
+
+    if (!enflamedTurrets.length) {
+      this.finishResolveEventCard();
+      return;
+    }
+
+    const onSelect = (turret: Turret) => {
+      turret.flames = 0;
+      this.gameState.pendingTurretSelection = undefined;
+      eventUpdater.fire("turret-update");
+      this.finishResolveEventCard();
+    };
+
+    this.gameState.pendingTurretSelection = {
+      validChoices: enflamedTurrets,
+      onSelect,
+    };
+    eventUpdater.fire("turret-update");
+  }
 }

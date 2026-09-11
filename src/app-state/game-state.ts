@@ -80,6 +80,7 @@ export class GameState {
   pendingEventCardBrowser?: PendingEventCardBrowser;
   pendingSiegeSelection?: PendingSiegeSelection;
   pendingEventSelection?: PendingEventSelection;
+  pendingTurretSelection?: PendingTurretSelection;
 
   strengthDice: number;
   holyDice: number;
