@@ -44,6 +44,7 @@ export interface SiegeEngineCard {
   effect: SiegeEngineEffect;
   rowData: SiegeEngineRowData[];
   magicTokens?: number;
+  strengthTokens?: number;
 }
 
 export function isSiegeCard(card: any): card is SiegeEngineCard {

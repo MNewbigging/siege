@@ -93,7 +93,7 @@ export class EventResolver {
 
     // Testing
     const testCardIndex = this.gameState.eventDeck.findIndex(
-      (card) => card.name === EventCardName.GargansBlessing,
+      (card) => card.name === EventCardName.FinalPush,
     );
 
     if (testCardIndex >= 0)
@@ -279,6 +279,23 @@ export class EventResolver {
   }
 
   private finalPush() {
-    //
+    const nearestSiegeEngines = getNearestSiegeEngines(
+      this.gameState.battlefield,
+    );
+
+    const onSelect = (siegeCard: SiegeEngineCard) => {
+      siegeCard.strengthTokens ??= 0;
+      siegeCard.strengthTokens += 2;
+
+      this.gameState.pendingSiegeSelection = undefined;
+      eventUpdater.fire("siege-engine-update");
+      this.finishResolveEventCard();
+    };
+
+    this.gameState.pendingSiegeSelection = {
+      validChoices: nearestSiegeEngines,
+      onSelect,
+    };
+    eventUpdater.fire("siege-engine-update");
   }
 }

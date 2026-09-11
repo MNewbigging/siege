@@ -41,7 +41,12 @@ export function SiegeCard({ card }: SiegeCardProps) {
     <div className={cardClasses.join(" ")} onClick={onClick}>
       <div className="body">
         <div className="ranges">{ranges}</div>
-        {card.magicTokens && <TokensDisplay magicTokens={card.magicTokens} />}
+        {(card.magicTokens || card.strengthTokens) && (
+          <TokensDisplay
+            magicTokens={card.magicTokens}
+            strengthTokens={card.strengthTokens}
+          />
+        )}
         <div className="name">{card.name}</div>
       </div>
       <div className="effect-bar">{card.effect}</div>
