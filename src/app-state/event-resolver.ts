@@ -70,6 +70,7 @@ export class EventResolver {
         this.turretShudders();
         break;
       case EventCardName.SpellSickness:
+        this.spellSickness();
         break;
       case EventCardName.FoolsRush:
         break;
@@ -94,7 +95,7 @@ export class EventResolver {
 
     // Testing
     const testCardIndex = this.gameState.eventDeck.findIndex(
-      (card) => card.name === EventCardName.TurretShudders,
+      (card) => card.name === EventCardName.SpellSickness,
     );
 
     if (testCardIndex >= 0)
@@ -319,5 +320,12 @@ export class EventResolver {
 
     this.gameState.pendingTurretSelection = { validChoices, onSelect };
     eventUpdater.fire("turret-update");
+  }
+
+  private spellSickness() {
+    this.requestResolver.setupDiceSpendRequest({
+      type: AttackType.Holy,
+      onComplete: this.finishResolveEventCard,
+    });
   }
 }
