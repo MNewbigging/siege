@@ -1,19 +1,13 @@
+Siege engines:
+- breach tower still to do
 
+Events:
+- be able to resolve all the events
 
-Resolving Siege Engines:
- - Highlight the ones that need to be resolved
- - Player must click to proceed/resolve
- - Must be done left-right
+Player actions:
+- defeating troops, collecting their cards
+- using troop cards
 
- Create an array property in game state for this step. When/before the round stage starts,
- find the active siege engines in this round and add them to the 'resolveSieges' array.
-
- Fire an event whenever resolveSieges changes. Siege cards listen for this, check if they are the
- next siege to resolve and if so will highlight and assign a callback on click for the resolution.
-
- On each resolve function, pop that resolved siege from resolveSieges and check if empty - if so
- then proceed to next stage
-
-
-Drag behaviour:
-- 'freely' anywhere onto the card
+- vanguard attacks
+- flames
+- champions

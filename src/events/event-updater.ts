@@ -1,12 +1,13 @@
 export type GameEvent =
   | "game-started"
-  | "resolve-siege-engines"
+  | "resolve-siege-engines" // todo can i use siege-engine-update instead?
   | "dice-update"
   | "round-stage-update"
   | "champion-update"
   | "turret-update"
   | "event-update"
-  | "troop-browser-update";
+  | "troop-browser-update"
+  | "siege-engine-update";
 
 type EventCallback = () => void;
 

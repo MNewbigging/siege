@@ -33,6 +33,10 @@ interface PendingChampionSelection {
   onSelect: (champion: Champion) => void;
 }
 
+interface PendingSiegeSelection {
+  validChoices: SiegeEngineCard[];
+  onSelect: (siege: SiegeEngineCard) => void;
+}
 interface PendingTroopCardBrowser {
   cards: ITroopCard[];
 }
@@ -56,11 +60,12 @@ export class GameState {
 
   // Transient
   siegeEnginesToResolve: SiegeEngineCard[] = [];
-  currentlyResolvingSiegeEngine?: SiegeEngineCard;
+  currentlyResolvingSiegeEngine?: SiegeEngineCard; // should this be pending siege selection instead?
   pendingDiceSelection?: PendingDiceSelection;
   pendingChampionSelection?: PendingChampionSelection;
   currentlyResolvingEventCard?: EventCard;
   pendingTroopCardBrowser?: PendingTroopCardBrowser;
+  pendingSiegeSelection?: PendingSiegeSelection;
 
   strengthDice: number;
   holyDice: number;
@@ -172,7 +177,7 @@ export class GameState {
         if (!this.eventDeck.length) this.eventDeck = makeEventDeck();
         this.currentlyResolvingEventCard =
           this.eventDeck.find(
-            (card) => card.name === EventCardName.DangerousVisions,
+            (card) => card.name === EventCardName.ShamansRitual,
           ) ?? this.eventDeck.pop();
         eventUpdater.fire("event-update");
 

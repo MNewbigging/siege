@@ -10,18 +10,18 @@ interface SiegeCardProps {
 
 export function SiegeCard({ card }: SiegeCardProps) {
   const gameState = useGameState();
-  useEventUpdater("resolve-siege-engines");
+  useEventUpdater("resolve-siege-engines", "siege-engine-update");
 
   const isActive = gameState.currentlyResolvingSiegeEngine === card;
   const isQueued = gameState.siegeEnginesToResolve.includes(card);
-  const cardClasses = [
-    "siege-card",
-    isActive ? "highlight-active" : "",
-    isQueued ? "highlight-queued" : "",
-  ];
+
+  const isValidChoice =
+    gameState.pendingSiegeSelection?.validChoices.includes(card);
 
   function onClick() {
-    if (isQueued) {
+    if (isValidChoice) {
+      gameState.pendingSiegeSelection?.onSelect(card);
+    } else if (isQueued) {
       gameState.beginResolveSiegeEngine(card);
     }
   }
@@ -36,6 +36,12 @@ export function SiegeCard({ card }: SiegeCardProps) {
       </div>,
     );
   });
+
+  const cardClasses = [
+    "siege-card",
+    isActive || isValidChoice ? "highlight-active" : "",
+    isQueued ? "highlight-queued" : "",
+  ];
 
   return (
     <div className={cardClasses.join(" ")} onClick={onClick}>

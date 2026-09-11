@@ -5,6 +5,7 @@
   transition: background-color 250ms ease;
   display: flex;
   justify-content: center;
+  pointer-events: none;
 
   &.presenting {
     align-items: center;
@@ -17,6 +18,7 @@
     background-color: transparent;
 
     .event-card {
+      pointer-events: auto;
       margin-bottom: -160px;
       transform: scale(0.8);
       transition:

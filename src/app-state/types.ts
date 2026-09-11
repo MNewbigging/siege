@@ -43,6 +43,7 @@ export interface SiegeEngineCard {
   name: string;
   effect: SiegeEngineEffect;
   rowData: SiegeEngineRowData[];
+  magicTokens?: number;
 }
 
 export function isSiegeCard(card: any): card is SiegeEngineCard {
