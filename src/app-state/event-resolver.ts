@@ -36,6 +36,7 @@ export class EventResolver {
         this.luckyShot();
         break;
       case EventCardName.GargansBlessing:
+        this.gargansBlessing();
         break;
       case EventCardName.Deserter:
         break;
@@ -74,7 +75,7 @@ export class EventResolver {
 
     // Testing
     const testCard = this.gameState.eventDeck.find(
-      (card) => card.name === EventCardName.LuckyShot,
+      (card) => card.name === EventCardName.GargansBlessing,
     );
 
     return testCard ?? this.gameState.eventDeck.pop()!;
@@ -121,7 +122,7 @@ export class EventResolver {
 
     this.gameState.battlefield.forEach((col) => {
       // Start at the end
-      for (let i = col.length - 1; i > 0; i--) {
+      for (let i = col.length - 1; i >= 0; i--) {
         const card = col[i];
         if (!isSiegeCard(card)) continue;
 
@@ -129,8 +130,7 @@ export class EventResolver {
         if (i === farthestIndex) {
           farthestSiegeCards.push(card);
         } else if (i > farthestIndex) {
-          farthestSiegeCards.length = 0;
-          farthestSiegeCards.push(card);
+          farthestSiegeCards = [card];
           farthestIndex = i;
         }
 
@@ -184,6 +184,43 @@ export class EventResolver {
     };
 
     this.gameState.pendingSiegeSelection = { validChoices: inactive, onSelect };
+    eventUpdater.fire("siege-engine-update");
+  }
+
+  private gargansBlessing() {
+    // Get the nearest siege engine
+    let nearestIndex = 4;
+    let nearestSiegeCards: SiegeEngineCard[] = [];
+
+    this.gameState.battlefield.forEach((col) => {
+      for (let i = 0; i < col.length; i++) {
+        const card = col[i];
+        if (!isSiegeCard(card)) continue;
+
+        if (i === nearestIndex) nearestSiegeCards.push(card);
+        else if (i < nearestIndex) {
+          nearestSiegeCards = [card];
+          nearestIndex = i;
+        }
+
+        break;
+      }
+    });
+
+    // On select, add 2 magic tokens
+    const onSelect = (siegeCard: SiegeEngineCard) => {
+      siegeCard.magicTokens ??= 0;
+      siegeCard.magicTokens += 2;
+
+      this.gameState.pendingSiegeSelection = undefined;
+      eventUpdater.fire("siege-engine-update");
+      this.finishResolveEventCard();
+    };
+
+    this.gameState.pendingSiegeSelection = {
+      validChoices: nearestSiegeCards,
+      onSelect,
+    };
     eventUpdater.fire("siege-engine-update");
   }
 }
