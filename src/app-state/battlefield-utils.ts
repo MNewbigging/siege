@@ -1,5 +1,23 @@
 import { BattlefieldCard, isSiegeCard, SiegeEngineCard } from "./types";
 
+// Removes a card in place, leaving an empty (undefined) slot rather than shifting the column
+export function removeCard(column: BattlefieldCard[], rowIndex: number) {
+  column[rowIndex] = undefined;
+}
+
+// Slides cards down toward the front (index 0), collapsing gaps to the top of the column
+export function slideColumnDown(column: BattlefieldCard[]) {
+  const remaining = column.filter((card) => card !== undefined);
+  const emptySlots = column.length - remaining.length;
+  return [...remaining, ...new Array<undefined>(emptySlots).fill(undefined)];
+}
+
+export function slideBattlefieldDown(
+  battlefield: BattlefieldCard[][],
+): BattlefieldCard[][] {
+  return battlefield.map(slideColumnDown);
+}
+
 export function getNearestSiegeEngines(
   battlefield: BattlefieldCard[][],
 ): SiegeEngineCard[] {

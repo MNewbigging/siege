@@ -328,4 +328,8 @@ export class EventResolver {
       onComplete: this.finishResolveEventCard,
     });
   }
+
+  private foolsRush() {
+    // Get
+  }
 }

@@ -2,6 +2,7 @@ import { eventUpdater } from "../events/event-updater";
 import { EventCard } from "./event-cards";
 import { EventResolver } from "./event-resolver";
 import { RequestResolver } from "./request-resolver";
+import { slideBattlefieldDown } from "./battlefield-utils";
 import {
   makeEventDeck,
   makeSiegeDeck,
@@ -162,6 +163,10 @@ export class GameState {
         break;
       case RoundStage.C_ResolveEvent:
         this.eventResolver.resolveEvent();
+        break;
+      case RoundStage.F_Advance:
+        this.battlefield = slideBattlefieldDown(this.battlefield);
+        eventUpdater.fire("battlefield-update");
         break;
     }
   }
