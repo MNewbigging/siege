@@ -87,6 +87,7 @@ export class EventResolver {
       case EventCardName.BackForMore:
         break;
       case EventCardName.CampCrud:
+        this.campCrud();
         break;
       case EventCardName.TrainedWarriors:
         this.trainedWarriors();
@@ -103,7 +104,7 @@ export class EventResolver {
 
     // Testing
     const testCardIndex = this.gameState.eventDeck.findIndex(
-      (card) => card.name === EventCardName.TrainedWarriors,
+      (card) => card.name === EventCardName.CampCrud,
     );
 
     if (testCardIndex >= 0)
@@ -377,6 +378,21 @@ export class EventResolver {
 
   private friendsArrive() {
     //
+  }
+
+  private backForMore() {
+    //
+  }
+
+  private campCrud() {
+    // Reduce any 3 dice by 1
+    this.requestResolver.setupDiceReduceRequest(() =>
+      this.requestResolver.setupDiceReduceRequest(() =>
+        this.requestResolver.setupDiceReduceRequest(
+          this.finishResolveEventCard,
+        ),
+      ),
+    );
   }
 
   private trainedWarriors() {

@@ -137,4 +137,25 @@ export class RequestResolver {
     this.gameState.pendingChampionSelection = { validChoices, onSelect };
     eventUpdater.fire("champion-update");
   }
+
+  setupDiceReduceRequest(onComplete: () => void) {
+    const validChoices = this.gameState.activeDice.filter(
+      (die) => die.value > 1,
+    );
+
+    if (!validChoices.length) {
+      onComplete();
+      return;
+    }
+
+    const onSelect = (dice: Dice) => {
+      dice.value--;
+      this.gameState.pendingDiceSelection = undefined;
+      eventUpdater.fire("dice-update");
+      onComplete();
+    };
+
+    this.gameState.pendingDiceSelection = { validChoices, onSelect };
+    eventUpdater.fire("dice-update");
+  }
 }
