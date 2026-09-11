@@ -38,6 +38,7 @@ interface PendingSiegeSelection {
 }
 interface PendingTroopCardBrowser {
   cards: ITroopCard[];
+  onAccept: (cards: ITroopCard[]) => void;
 }
 
 interface PendingEventSelection {

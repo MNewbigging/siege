@@ -59,7 +59,7 @@ export function TroopCardBrowser() {
           <button
             className="confirm-button"
             type="button"
-            onClick={() => gameState.completeTroopCardBrowser(orderedCards)}
+            onClick={() => browserRequest.onAccept(orderedCards)}
           >
             Accept
           </button>

@@ -69,27 +69,10 @@ export class EventResolver {
 
     // Testing
     const testCard = this.gameState.eventDeck.find(
-      (card) => card.name === EventCardName.ShamansRitual,
+      (card) => card.name === EventCardName.DangerousVisions,
     );
 
     return testCard ?? this.gameState.eventDeck.pop()!;
-  }
-
-  completeTroopCardBrowser(orderedCards: ITroopCard[]) {
-    if (!this.gameState.pendingTroopCardBrowser) return;
-
-    const remainingDeck = this.gameState.troopDeck.slice(
-      0,
-      -orderedCards.length,
-    );
-    this.gameState.troopDeck = [
-      ...remainingDeck,
-      ...orderedCards.slice().reverse(),
-    ];
-    this.gameState.pendingTroopCardBrowser = undefined;
-    eventUpdater.fire("troop-browser-update");
-
-    this.finishResolveEventCard();
   }
 
   private finishResolveEventCard() {
@@ -106,7 +89,22 @@ export class EventResolver {
       return;
     }
 
-    this.gameState.pendingTroopCardBrowser = { cards };
+    const onAccept = (orderedCards: ITroopCard[]) => {
+      const remainingDeck = this.gameState.troopDeck.slice(
+        0,
+        -orderedCards.length,
+      );
+      this.gameState.troopDeck = [
+        ...remainingDeck,
+        ...orderedCards.slice().reverse(),
+      ];
+      this.gameState.pendingTroopCardBrowser = undefined;
+      eventUpdater.fire("troop-browser-update");
+
+      this.finishResolveEventCard();
+    };
+
+    this.gameState.pendingTroopCardBrowser = { cards, onAccept };
     eventUpdater.fire("troop-browser-update");
   }
 
