@@ -1,7 +1,7 @@
 import { eventCards } from "./event-cards";
 import { siegeEngineCards } from "./siege-engine-cards";
 import { allTroopCards } from "./troop-cards";
-import { SiegeEngineCard, ITroopCard, Turret } from "./types";
+import { SiegeEngineCard, TroopCard, Turret } from "./types";
 import { shuffleArray, getCountOfAttackType } from "./utils";
 
 export function makeSiegeDeck() {
@@ -27,7 +27,7 @@ export function makeSiegeDeck() {
 }
 
 export function makeTroopDeck() {
-  const troopDeck: ITroopCard[] = [];
+  const troopDeck: TroopCard[] = [];
 
   allTroopCards.forEach((card) => {
     const count = getCountOfAttackType(card.type);

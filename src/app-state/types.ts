@@ -8,15 +8,16 @@ export interface Dice {
   value: number;
 }
 
-export interface ITroopCard {
+export interface TroopCard {
   name: string;
   type: AttackType;
   effect: string;
   toDefeatA: Dice;
   toDefeatB?: Dice;
+  strengthTokens?: number;
 }
 
-export function isTroopCard(card: any): card is ITroopCard {
+export function isTroopCard(card: any): card is TroopCard {
   return "toDefeatA" in card;
 }
 
@@ -51,7 +52,7 @@ export function isSiegeCard(card: any): card is SiegeEngineCard {
   return "rowData" in card;
 }
 
-export type BattlefieldCard = SiegeEngineCard | ITroopCard | undefined;
+export type BattlefieldCard = SiegeEngineCard | TroopCard | undefined;
 
 export enum RoundStage {
   A_RollDice = "Rolling dice",

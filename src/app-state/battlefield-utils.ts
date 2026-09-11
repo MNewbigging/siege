@@ -1,4 +1,10 @@
-import { BattlefieldCard, isSiegeCard, SiegeEngineCard } from "./types";
+import {
+  BattlefieldCard,
+  isSiegeCard,
+  isTroopCard,
+  TroopCard,
+  SiegeEngineCard,
+} from "./types";
 
 // Removes a card in place, leaving an empty (undefined) slot rather than shifting the column
 export function removeCard(column: BattlefieldCard[], rowIndex: number) {
@@ -34,6 +40,51 @@ export function getFarthestSiegeEngines(
     battlefield,
     (row, current) => row > current,
   );
+}
+
+function getTroopDefeatValue(troop: TroopCard): number {
+  return troop.toDefeatA.value + (troop.toDefeatB?.value ?? 0);
+}
+
+export function getWeakestFrontTroops(
+  battlefield: BattlefieldCard[][],
+): TroopCard[] {
+  return getFrontTroopsAtValueExtreme(
+    battlefield,
+    (value, current) => value < current,
+  );
+}
+
+export function getStrongestFrontTroops(
+  battlefield: BattlefieldCard[][],
+): TroopCard[] {
+  return getFrontTroopsAtValueExtreme(
+    battlefield,
+    (value, current) => value > current,
+  );
+}
+
+function getFrontTroopsAtValueExtreme(
+  battlefield: BattlefieldCard[][],
+  isBetterValue: (value: number, currentValue: number) => boolean,
+): TroopCard[] {
+  let selectedValue: number | undefined;
+  let selectedTroops: TroopCard[] = [];
+
+  battlefield.forEach((column) => {
+    const card = column[0];
+    if (!isTroopCard(card)) return;
+
+    const value = getTroopDefeatValue(card);
+    if (selectedValue === undefined || isBetterValue(value, selectedValue)) {
+      selectedValue = value;
+      selectedTroops = [card];
+    } else if (value === selectedValue) {
+      selectedTroops.push(card);
+    }
+  });
+
+  return selectedTroops;
 }
 
 function getSiegeEnginesAtRowExtreme(

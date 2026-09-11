@@ -1,7 +1,7 @@
-import { AttackType, ITroopCard } from "./types";
+import { AttackType, TroopCard } from "./types";
 
 // There are 5 of each Strength troop, and 3 of each Magic troop
-export const allTroopCards: ITroopCard[] = [
+export const allTroopCards: TroopCard[] = [
   {
     name: "Troll Brute",
     type: AttackType.Strength,

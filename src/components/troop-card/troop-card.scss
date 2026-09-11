@@ -9,10 +9,16 @@
   display: flex;
   flex-direction: column;
 
+  &.active {
+    border: 2px solid red;
+    cursor: pointer;
+  }
+
   .body {
     flex: 2 1 100%;
     padding-bottom: 5px;
     display: flex;
+    gap: 10px;
 
     .dice-reqs {
       flex: 0 0 26px;

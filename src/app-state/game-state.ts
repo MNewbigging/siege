@@ -16,7 +16,7 @@ import {
   Dice,
   RoundStage,
   SiegeEngineCard,
-  ITroopCard,
+  TroopCard,
   Champion,
   Turret,
 } from "./types";
@@ -38,8 +38,8 @@ interface PendingSiegeSelection {
   onSelect: (siege: SiegeEngineCard) => void;
 }
 interface PendingTroopCardBrowser {
-  cards: ITroopCard[];
-  onAccept: (cards: ITroopCard[]) => void;
+  cards: TroopCard[];
+  onAccept: (cards: TroopCard[]) => void;
 }
 
 interface PendingEventCardBrowser {
@@ -57,17 +57,22 @@ interface PendingTurretSelection {
   onSelect: (turret: Turret) => void;
 }
 
+interface PendingTroopSelection {
+  validChoices: TroopCard[];
+  onSelect: (troop: TroopCard) => void;
+}
+
 export class GameState {
   currentRound = 1;
   maxRounds = 7;
   roundStage: RoundStage = RoundStage.A_RollDice;
 
   siegeDeck: SiegeEngineCard[];
-  troopDeck: ITroopCard[];
+  troopDeck: TroopCard[];
   championDrawDeck: Champion[] = [];
   championDiscardDeck: Champion[] = [];
   eventDeck: EventCard[];
-  playerHand: ITroopCard[];
+  playerHand: TroopCard[];
   battlefield: BattlefieldCard[][] = []; // by column, index 0 is front/vanguard
   activeDice: Dice[] = [];
   spentDice: Dice[] = [];
@@ -82,6 +87,7 @@ export class GameState {
   pendingSiegeSelection?: PendingSiegeSelection;
   pendingEventSelection?: PendingEventSelection;
   pendingTurretSelection?: PendingTurretSelection;
+  pendingTroopSelection?: PendingTroopSelection;
 
   strengthDice: number;
   holyDice: number;

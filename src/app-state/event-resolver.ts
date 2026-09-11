@@ -2,6 +2,7 @@ import { eventUpdater } from "../events/event-updater";
 import {
   getFarthestSiegeEngines,
   getNearestSiegeEngines,
+  getWeakestFrontTroops,
 } from "./battlefield-utils";
 import { EventCard, EventCardName } from "./event-cards";
 import type { GameState } from "./game-state";
@@ -11,7 +12,7 @@ import { SiegeResolver } from "./siege-resolver";
 import {
   AttackType,
   isSiegeCard,
-  ITroopCard,
+  TroopCard,
   RoundStage,
   SiegeEngineCard,
   Turret,
@@ -73,6 +74,7 @@ export class EventResolver {
         this.spellSickness();
         break;
       case EventCardName.FoolsRush:
+        this.foolsRush();
         break;
       case EventCardName.UnifiedRites:
         break;
@@ -95,7 +97,7 @@ export class EventResolver {
 
     // Testing
     const testCardIndex = this.gameState.eventDeck.findIndex(
-      (card) => card.name === EventCardName.SpellSickness,
+      (card) => card.name === EventCardName.FoolsRush,
     );
 
     if (testCardIndex >= 0)
@@ -119,7 +121,7 @@ export class EventResolver {
       return;
     }
 
-    const onAccept = (orderedCards: ITroopCard[]) => {
+    const onAccept = (orderedCards: TroopCard[]) => {
       const remainingDeck = this.gameState.troopDeck.slice(
         0,
         -orderedCards.length,
@@ -330,6 +332,25 @@ export class EventResolver {
   }
 
   private foolsRush() {
-    // Get
+    const weakestTroops = getWeakestFrontTroops(this.gameState.battlefield);
+
+    if (!weakestTroops.length) {
+      this.finishResolveEventCard();
+      return;
+    }
+
+    const onSelect = (troop: TroopCard) => {
+      troop.strengthTokens ??= 0;
+      troop.strengthTokens += 2;
+      this.gameState.pendingTroopSelection = undefined;
+      eventUpdater.fire("troop-update");
+      this.finishResolveEventCard();
+    };
+
+    this.gameState.pendingTroopSelection = {
+      validChoices: weakestTroops,
+      onSelect,
+    };
+    eventUpdater.fire("troop-update");
   }
 }

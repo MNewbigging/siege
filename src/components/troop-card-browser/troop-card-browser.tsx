@@ -1,5 +1,5 @@
 import { DragEvent, useEffect, useState } from "react";
-import { ITroopCard } from "../../app-state/types";
+import type { TroopCard as TroopCardData } from "../../app-state/types";
 import { useGameState } from "../game-state-context";
 import { useEventUpdater } from "../hooks/use-event-updater";
 import { TroopCard } from "../troop-card/troop-card";
@@ -10,7 +10,7 @@ export function TroopCardBrowser() {
 
   const gameState = useGameState();
   const browserRequest = gameState.pendingTroopCardBrowser;
-  const [orderedCards, setOrderedCards] = useState<ITroopCard[]>([]);
+  const [orderedCards, setOrderedCards] = useState<TroopCardData[]>([]);
   const [draggedIndex, setDraggedIndex] = useState<number | undefined>();
 
   useEffect(() => {
@@ -92,7 +92,7 @@ export function TroopCardBrowser() {
 }
 
 function reorderCards(
-  cards: ITroopCard[],
+  cards: TroopCardData[],
   sourceIndex: number,
   targetIndex: number,
 ) {
