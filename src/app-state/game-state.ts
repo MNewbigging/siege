@@ -1,5 +1,5 @@
 import { eventUpdater } from "../events/event-updater";
-import { EventCard, EventCardName } from "./event-cards";
+import { EventCard } from "./event-cards";
 import { EventResolver } from "./event-resolver";
 import {
   makeEventDeck,
@@ -40,6 +40,11 @@ interface PendingTroopCardBrowser {
   cards: ITroopCard[];
 }
 
+interface PendingEventSelection {
+  eventCard: EventCard;
+  onSelect: () => void;
+}
+
 export class GameState {
   currentRound = 1;
   maxRounds = 7;
@@ -60,9 +65,9 @@ export class GameState {
   // Transient
   pendingDiceSelection?: PendingDiceSelection;
   pendingChampionSelection?: PendingChampionSelection;
-  currentlyResolvingEventCard?: EventCard; // todo move to event resolver
   pendingTroopCardBrowser?: PendingTroopCardBrowser;
   pendingSiegeSelection?: PendingSiegeSelection;
+  pendingEventSelection?: PendingEventSelection;
 
   strengthDice: number;
   holyDice: number;
@@ -100,16 +105,6 @@ export class GameState {
     this.toStage(RoundStage.B_ResolveSiege);
   }
 
-  beginResolveEventCard() {
-    if (!this.currentlyResolvingEventCard) return;
-
-    this.eventResolver.resolve(this.currentlyResolvingEventCard);
-  }
-
-  completeTroopCardBrowser(orderedCards: ITroopCard[]) {
-    this.eventResolver.completeTroopCardBrowser(orderedCards);
-  }
-
   getColumnIndex(card: BattlefieldCard) {
     return this.battlefield.findIndex((col) => col.includes(card));
   }
@@ -136,26 +131,18 @@ export class GameState {
   }
 
   toStage(nextStage: RoundStage) {
+    this.setStage(nextStage);
+
     switch (nextStage) {
       case RoundStage.A_RollDice:
         // Flip all champions
         // Await player rolling dice
         break;
       case RoundStage.B_ResolveSiege:
-        // We're now resolving siege engines
-        this.setStage(nextStage);
         this.siegeResolver.resolveEngines();
-
         break;
       case RoundStage.C_ResolveEvent:
-        this.setStage(nextStage);
-        if (!this.eventDeck.length) this.eventDeck = makeEventDeck();
-        this.currentlyResolvingEventCard =
-          this.eventDeck.find(
-            (card) => card.name === EventCardName.ShamansRitual,
-          ) ?? this.eventDeck.pop();
-        eventUpdater.fire("event-update");
-
+        this.eventResolver.resolveEvent();
         break;
     }
   }

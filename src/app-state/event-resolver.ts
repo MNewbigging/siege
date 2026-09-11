@@ -1,12 +1,26 @@
 import { eventUpdater } from "../events/event-updater";
 import { EventCard, EventCardName } from "./event-cards";
 import type { GameState } from "./game-state";
+import { makeEventDeck } from "./setup-utils";
 import { isSiegeCard, ITroopCard, RoundStage, SiegeEngineCard } from "./types";
 
 export class EventResolver {
   constructor(private gameState: GameState) {}
 
-  resolve(eventCard: EventCard) {
+  resolveEvent() {
+    const eventCard = this.getNextEventCard();
+
+    const onSelect = () => {
+      // Acknowledge the event to start resolving it
+      this.resolve(eventCard);
+    };
+
+    this.gameState.pendingEventSelection = { eventCard, onSelect };
+
+    eventUpdater.fire("event-update");
+  }
+
+  private resolve(eventCard: EventCard) {
     switch (eventCard.name) {
       case EventCardName.DangerousVisions:
         this.setupTroopCardBrowser(6); // todo test it works when troop cards can be drawn into battlefield
@@ -49,6 +63,18 @@ export class EventResolver {
     }
   }
 
+  private getNextEventCard(): EventCard {
+    if (!this.gameState.eventDeck.length)
+      this.gameState.eventDeck = makeEventDeck();
+
+    // Testing
+    const testCard = this.gameState.eventDeck.find(
+      (card) => card.name === EventCardName.ShamansRitual,
+    );
+
+    return testCard ?? this.gameState.eventDeck.pop()!;
+  }
+
   completeTroopCardBrowser(orderedCards: ITroopCard[]) {
     if (!this.gameState.pendingTroopCardBrowser) return;
 
@@ -67,7 +93,7 @@ export class EventResolver {
   }
 
   private finishResolveEventCard() {
-    this.gameState.currentlyResolvingEventCard = undefined;
+    this.gameState.pendingEventSelection = undefined;
     eventUpdater.fire("event-update");
     this.gameState.toStage(RoundStage.D_Action);
   }

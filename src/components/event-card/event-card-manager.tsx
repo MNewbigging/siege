@@ -12,7 +12,7 @@ export function EventCardManager() {
   >(undefined);
 
   // Check game-state for current card to show
-  const eventCard = gameState.currentlyResolvingEventCard;
+  const eventCard = gameState.pendingEventSelection?.eventCard;
 
   useEffect(() => {
     // If the event card is there, we present it
@@ -26,7 +26,7 @@ export function EventCardManager() {
   function onClickScreen() {
     if (displayMode !== "presenting") return;
 
-    gameState.beginResolveEventCard();
+    gameState.pendingEventSelection?.onSelect();
 
     setDisplayMode("docked");
   }
