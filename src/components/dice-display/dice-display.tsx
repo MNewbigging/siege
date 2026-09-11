@@ -12,14 +12,11 @@ export function DiceDisplay({ dice }: DiceDisplayProps) {
   // If there is a pending dice selection, highlight if this dice is valid for selection
   const selection = gameState.pendingDiceSelection;
 
-  const isValidSelection =
-    !!selection &&
-    (!selection.type || selection.type === dice.type) &&
-    (!selection.mustMatchValue || selection.mustMatchValue === dice.value);
+  const isValidSelection = !!selection?.validChoices.includes(dice);
 
   function onClick() {
     if (isValidSelection) {
-      gameState.pendingDiceSelection?.onSelect(dice);
+      selection?.onSelect(dice);
     }
   }
 

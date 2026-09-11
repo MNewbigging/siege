@@ -8,8 +8,10 @@ export class RequestResolver {
   constructor(private gameState: GameState) {}
 
   setupDiceForfeitRequest(onComplete: () => void) {
+    const validChoices = [...this.gameState.activeDice];
+
     // This shouldn't happen but just in case there are no dice to forfeit
-    if (!this.gameState.activeDice.length) {
+    if (!validChoices.length) {
       onComplete();
       return;
     }
@@ -28,7 +30,7 @@ export class RequestResolver {
       onComplete();
     };
 
-    this.gameState.pendingDiceSelection = { onSelect };
+    this.gameState.pendingDiceSelection = { validChoices, onSelect };
     eventUpdater.fire("dice-update");
   }
 
@@ -39,11 +41,11 @@ export class RequestResolver {
     const { type, onComplete } = options;
 
     // If given a type, ensure there are active dice of that type
-    const eligibleDice = type
+    const validChoices = type
       ? this.gameState.activeDice.filter((d) => d.type === type)
-      : this.gameState.activeDice;
+      : [...this.gameState.activeDice];
 
-    if (!eligibleDice.length) {
+    if (!validChoices.length) {
       onComplete();
       return;
     }
@@ -60,23 +62,23 @@ export class RequestResolver {
       onComplete();
     };
 
-    this.gameState.pendingDiceSelection = { type, onSelect };
+    this.gameState.pendingDiceSelection = { validChoices, onSelect };
     eventUpdater.fire("dice-update");
   }
 
   setupDiceRerollRequest(valueToReroll: number, onComplete: () => void) {
     // If there's not an active dice of the given value to reroll, complete
-    const hasActiveDiceOfValue = this.gameState.activeDice.some(
+    const validChoices = this.gameState.activeDice.filter(
       (dice) => dice.value === valueToReroll,
     );
-    if (!hasActiveDiceOfValue) {
+    if (!validChoices.length) {
       onComplete();
       return;
     }
 
     const onSelect = (dice: Dice) => {
-      if (dice.value !== valueToReroll)
-        throw new Error("Not the requested reroll dice value");
+      if (!validChoices.includes(dice))
+        throw new Error("Not a valid dice to reroll");
 
       dice.value = diceRoll();
 
@@ -86,19 +88,16 @@ export class RequestResolver {
       onComplete();
     };
 
-    this.gameState.pendingDiceSelection = {
-      mustMatchValue: valueToReroll,
-      onSelect,
-    };
+    this.gameState.pendingDiceSelection = { validChoices, onSelect };
     eventUpdater.fire("dice-update");
   }
 
   setupChampionFlipRequest(onComplete: () => void) {
     // If there is no champion available to flip
-    const unflippedChampions = this.gameState.activeChampions.some(
+    const validChoices = this.gameState.activeChampions.filter(
       (ch) => !ch.flipped,
     );
-    if (!unflippedChampions) {
+    if (!validChoices.length) {
       onComplete();
       return;
     }
@@ -111,13 +110,15 @@ export class RequestResolver {
       onComplete();
     };
 
-    this.gameState.pendingChampionSelection = { canBeFlipped: false, onSelect };
+    this.gameState.pendingChampionSelection = { validChoices, onSelect };
     eventUpdater.fire("champion-update");
   }
 
   setupChampionDiscardRequest(onComplete: () => void) {
+    const validChoices = [...this.gameState.activeChampions];
+
     // In case there are no champions to discard
-    if (!this.gameState.activeChampions.length) {
+    if (!validChoices.length) {
       onComplete();
       return;
     }
@@ -133,7 +134,7 @@ export class RequestResolver {
       onComplete();
     };
 
-    this.gameState.pendingChampionSelection = { canBeFlipped: true, onSelect };
+    this.gameState.pendingChampionSelection = { validChoices, onSelect };
     eventUpdater.fire("champion-update");
   }
 }

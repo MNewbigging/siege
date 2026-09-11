@@ -23,13 +23,12 @@ import { diceRoll } from "./utils";
 ("./siege-engine-cards");
 
 interface PendingDiceSelection {
+  validChoices: Dice[];
   onSelect: (dice: Dice) => void;
-  type?: AttackType;
-  mustMatchValue?: number;
 }
 
 interface PendingChampionSelection {
-  canBeFlipped: boolean;
+  validChoices: Champion[];
   onSelect: (champion: Champion) => void;
 }
 
@@ -50,6 +49,11 @@ interface PendingEventCardBrowser {
 interface PendingEventSelection {
   eventCard: EventCard;
   onSelect: () => void;
+}
+
+interface PendingTurretSelection {
+  validChoices: Turret[];
+  onSelect: (turret: Turret) => void;
 }
 
 export class GameState {

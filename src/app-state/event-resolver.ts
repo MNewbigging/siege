@@ -53,6 +53,7 @@ export class EventResolver {
         this.foresight();
         break;
       case EventCardName.ShoreWalls:
+        this.shoreWalls();
         break;
       case EventCardName.AccidentsHappen:
         break;
@@ -270,4 +271,6 @@ export class EventResolver {
     this.gameState.pendingEventCardBrowser = { cards, onAccept };
     eventUpdater.fire("event-browser-update");
   }
+
+  private shoreWalls() {}
 }
