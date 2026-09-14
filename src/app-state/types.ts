@@ -65,11 +65,6 @@ export enum RoundStage {
   G_Reinforce = "Reinforcing battlefield",
 }
 
-export interface Champion {
-  name: string;
-  flipped: boolean;
-}
-
 export interface Turret {
   flames: number;
 }

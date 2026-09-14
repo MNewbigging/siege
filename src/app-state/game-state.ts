@@ -17,10 +17,10 @@ import {
   RoundStage,
   SiegeEngineCard,
   TroopCard,
-  Champion,
   Turret,
 } from "./types";
 import { diceRoll } from "./utils";
+import { Champion } from "./champion-cards";
 ("./siege-engine-cards");
 
 interface PendingDiceSelection {

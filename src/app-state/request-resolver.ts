@@ -1,7 +1,8 @@
 import { eventUpdater } from "../events/event-updater";
 import type { GameState } from "./game-state";
-import { AttackType, Champion, Dice } from "./types";
+import { AttackType, Dice } from "./types";
 import { diceRoll } from "./utils";
+import { Champion } from "./champion-cards";
 
 // Shared "pending selection" setups used by both SiegeResolver and EventResolver
 export class RequestResolver {
