@@ -91,30 +91,21 @@ export function DiceDragProvider({ children }: PropsWithChildren) {
 
       if (drag.isDragging) {
         let target: [HTMLElement, DropHandler] | undefined;
-        let targetArea = Infinity;
 
-        for (const [element, onDrop] of dropTargets.current) {
-          const rect = element.getBoundingClientRect();
-          const isInside =
-            event.clientX >= rect.left &&
-            event.clientX <= rect.right &&
-            event.clientY >= rect.top &&
-            event.clientY <= rect.bottom;
-          const area = rect.width * rect.height;
+        const hit = document.elementFromPoint(event.clientX, event.clientY);
+        if (hit) {
+          const target = [...dropTargets.current].find(
+            ([element]) => element === hit || element.contains(hit),
+          );
 
-          if (element.isConnected && isInside && area < targetArea) {
-            target = [element, onDrop];
-            targetArea = area;
+          if (target) {
+            const [element, onDrop] = target;
+            const rect = element.getBoundingClientRect();
+            onDrop(drag.dice, {
+              x: (event.clientX - rect.left) / rect.width,
+              y: (event.clientY - rect.top) / rect.height,
+            });
           }
-        }
-
-        if (target) {
-          const [element, onDrop] = target;
-          const rect = element.getBoundingClientRect();
-          onDrop(drag.dice, {
-            x: (event.clientX - rect.left) / rect.width,
-            y: (event.clientY - rect.top) / rect.height,
-          });
         }
       }
 
