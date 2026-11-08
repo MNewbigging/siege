@@ -23,6 +23,7 @@ import { diceRoll } from "./utils";
 import { Champion } from "./champion-cards";
 ("./siege-engine-cards");
 
+// Todo put in own pending-selection-types file
 interface PendingDiceSelection {
   validChoices: Dice[];
   onSelect: (dice: Dice) => void;
@@ -118,12 +119,21 @@ export class GameState {
   }
 
   rollPlayerDice() {
+    // Note: this creates new dice since ids will change
     for (let i = 0; i < this.strengthDice; i++) {
-      this.activeDice.push({ type: AttackType.Strength, value: diceRoll() });
+      this.activeDice.push({
+        id: crypto.randomUUID(),
+        type: AttackType.Strength,
+        value: diceRoll(),
+      });
     }
 
     for (let i = 0; i < this.holyDice; i++) {
-      this.activeDice.push({ type: AttackType.Holy, value: diceRoll() });
+      this.activeDice.push({
+        id: crypto.randomUUID(),
+        type: AttackType.Holy,
+        value: diceRoll(),
+      });
     }
 
     eventUpdater.fire("dice-update");

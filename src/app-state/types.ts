@@ -4,6 +4,7 @@ export enum AttackType {
 }
 
 export interface Dice {
+  id: string;
   type: AttackType;
   value: number;
 }
@@ -12,14 +13,14 @@ export interface TroopCard {
   name: string;
   type: AttackType;
   effect: string;
-  diceToDefeatA: Dice;
-  diceToDefeatB?: Dice;
+  diceToDefeatA: Omit<Dice, "id">;
+  diceToDefeatB?: Omit<Dice, "id">;
   magicTokens?: number;
   strengthTokens?: number;
 }
 
 export function isTroopCard(card: any): card is TroopCard {
-  return "toDefeatA" in card;
+  return "diceToDefeatA" in card;
 }
 
 export interface SiegeEngineRowData {
