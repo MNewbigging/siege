@@ -1,4 +1,5 @@
 import type { TroopCard } from "../../app-state/types";
+import { DiceDisplay } from "../dice-display/dice-display";
 import { DiceReq } from "../dice-req/dice-req";
 import { useGameState } from "../game-state-context";
 import { useEventUpdater } from "../hooks/use-event-updater";
@@ -10,7 +11,7 @@ interface TroopCardProps {
 }
 
 export function TroopCard({ card }: TroopCardProps) {
-  useEventUpdater("troop-update");
+  useEventUpdater("troop-update", "planned-dice-update");
 
   const gameState = useGameState();
   const isValidChoice =
@@ -41,6 +42,21 @@ export function TroopCard({ card }: TroopCardProps) {
 
   const classes = ["troop-card", isValidChoice ? "active" : ""];
 
+  const plannedDice = gameState.pendingDiceSpend.get(card);
+  const plannedDiceDisplays = plannedDice?.map((plannedDice) => (
+    <div
+      key={`planned-dice-${plannedDice.dice.id}`}
+      style={{
+        position: "absolute",
+        transform: "translate(-50%, -50%)",
+        left: `${plannedDice.pos.x * 100}%`,
+        top: `${plannedDice.pos.y * 100}%`,
+      }}
+    >
+      <DiceDisplay dice={plannedDice.dice} />
+    </div>
+  ));
+
   return (
     <div
       className={classes.join(" ")}
@@ -48,6 +64,7 @@ export function TroopCard({ card }: TroopCardProps) {
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >
+      {plannedDiceDisplays}
       <div className="body">
         <div className="dice-reqs">
           <DiceReq

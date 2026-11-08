@@ -9,7 +9,8 @@ export type GameEvent =
   | "event-browser-update"
   | "siege-engine-update"
   | "battlefield-update"
-  | "troop-update";
+  | "troop-update"
+  | "planned-dice-update";
 
 type EventCallback = () => void;
 

@@ -130,6 +130,8 @@ export class GameState {
     this.pendingDiceSpend.set(card, plannedDice);
 
     console.log("dropped dice on card", this.pendingDiceSpend);
+
+    eventUpdater.fire("planned-dice-update");
   }
 
   getColumnIndex(card: BattlefieldCard) {

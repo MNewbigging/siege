@@ -1,5 +1,6 @@
-import { Dice } from "../../app-state/types";
+import { Dice, RoundStage } from "../../app-state/types";
 import { useGameState } from "../game-state-context";
+import { useEventUpdater } from "../hooks/use-event-updater";
 import "./dice-display.scss";
 
 interface DiceDisplayProps {
@@ -7,6 +8,7 @@ interface DiceDisplayProps {
 }
 
 export function DiceDisplay({ dice }: DiceDisplayProps) {
+  useEventUpdater("round-stage-update");
   const gameState = useGameState();
 
   // If there is a pending dice selection, highlight if this dice is valid for selection
@@ -36,7 +38,7 @@ export function DiceDisplay({ dice }: DiceDisplayProps) {
       className={diceClass}
       onClick={onClick}
       onDragStart={handleDragStart}
-      draggable
+      draggable={gameState.roundStage === RoundStage.D_Action}
     >
       {dice.value}
     </div>
