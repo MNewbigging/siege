@@ -22,17 +22,6 @@ export function SiegeCard({ card }: SiegeCardProps) {
     }
   }
 
-  // Construct the ranges block
-  const ranges: ReactElement[] = [];
-  card.rowData.forEach((rowData) => {
-    const classes = ["range", rowData.isActive ? "active" : ""].join(" ");
-    ranges.push(
-      <div key={`range-${rowData.rowIndex}`} className={classes}>
-        {rowData.health}
-      </div>,
-    );
-  });
-
   const cardClasses = ["siege-card", isValidChoice ? "highlight-active" : ""];
 
   if (card.magicTokens) console.log("got magic tokens", card.magicTokens);
@@ -40,7 +29,7 @@ export function SiegeCard({ card }: SiegeCardProps) {
   return (
     <div className={cardClasses.join(" ")} onClick={onClick}>
       <div className="body">
-        <div className="ranges">{ranges}</div>
+        <RangesBlock card={card} />
         {(card.magicTokens || card.strengthTokens) && (
           <TokensDisplay
             magicTokens={card.magicTokens}
@@ -52,4 +41,22 @@ export function SiegeCard({ card }: SiegeCardProps) {
       <div className="effect-bar">{card.effect}</div>
     </div>
   );
+}
+
+interface RangesBlockProps {
+  card: SiegeEngineCard;
+}
+
+function RangesBlock({ card }: RangesBlockProps) {
+  const ranges: ReactElement[] = [];
+  card.rowData.forEach((rowData) => {
+    const classes = ["range", rowData.isActive ? "active" : ""].join(" ");
+    ranges.push(
+      <div key={`range-${rowData.rowIndex}`} className={classes}>
+        {rowData.health}
+      </div>,
+    );
+  });
+
+  return <div className="ranges">{ranges}</div>;
 }
