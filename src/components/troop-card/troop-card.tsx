@@ -42,7 +42,7 @@ export function TroopCard({ card }: TroopCardProps) {
 
   const classes = ["troop-card", isValidChoice ? "active" : ""];
 
-  const plannedDice = gameState.pendingDiceSpend.get(card);
+  const plannedDice = gameState.pendingDicePlan.get(card);
   const plannedDiceDisplays = plannedDice?.map((plannedDice) => (
     <div
       key={`planned-dice-${plannedDice.dice.id}`}

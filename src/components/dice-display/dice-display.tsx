@@ -5,9 +5,10 @@ import "./dice-display.scss";
 
 interface DiceDisplayProps {
   dice: Dice;
+  shadow?: boolean;
 }
 
-export function DiceDisplay({ dice }: DiceDisplayProps) {
+export function DiceDisplay({ dice, shadow }: DiceDisplayProps) {
   useEventUpdater("round-stage-update");
   const gameState = useGameState();
 
@@ -31,6 +32,7 @@ export function DiceDisplay({ dice }: DiceDisplayProps) {
     "dice-display",
     dice.type,
     isValidSelection ? "highlight" : "",
+    shadow ? "shadow" : "",
   ].join(" ");
 
   return (
@@ -38,7 +40,7 @@ export function DiceDisplay({ dice }: DiceDisplayProps) {
       className={diceClass}
       onClick={onClick}
       onDragStart={handleDragStart}
-      draggable={gameState.roundStage === RoundStage.D_Action}
+      draggable={!shadow && gameState.roundStage === RoundStage.D_Action}
     >
       {dice.value}
     </div>

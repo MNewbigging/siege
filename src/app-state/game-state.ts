@@ -64,7 +64,7 @@ export class GameState {
   pendingEventSelection?: PendingEventSelection;
   pendingTurretSelection?: PendingTurretSelection;
   pendingTroopSelection?: PendingTroopSelection;
-  pendingDiceSpend = new Map<TroopCard, PlannedDice[]>();
+  pendingDicePlan = new Map<TroopCard, PlannedDice[]>();
 
   strengthDice: number;
   holyDice: number;
@@ -127,7 +127,7 @@ export class GameState {
     if (!dice) return;
 
     // This dice might be moving from another card
-    for (const [plannedCard, plannedDice] of this.pendingDiceSpend) {
+    for (const [plannedCard, plannedDice] of this.pendingDicePlan) {
       // Remove the dropped dice from this card
       const remainingDice = plannedDice.filter(
         (planned) => planned.dice.id !== diceId,
@@ -138,18 +138,26 @@ export class GameState {
 
       // Otherwise, update the old card with remaining dice (minus dropped dice)
       if (remainingDice.length)
-        this.pendingDiceSpend.set(plannedCard, remainingDice);
-      else this.pendingDiceSpend.delete(plannedCard); // unless that was the only one, so delete
+        this.pendingDicePlan.set(plannedCard, remainingDice);
+      else this.pendingDicePlan.delete(plannedCard); // unless that was the only one, so delete
     }
 
     // Update new card with dropped dice
-    const plannedDice = this.pendingDiceSpend.get(card) ?? [];
+    const plannedDice = this.pendingDicePlan.get(card) ?? [];
     plannedDice.push({ dice, pos });
-    this.pendingDiceSpend.set(card, plannedDice);
+    this.pendingDicePlan.set(card, plannedDice);
 
-    console.log("dropped dice on card", this.pendingDiceSpend);
+    console.log("dropped dice on card", this.pendingDicePlan);
 
     eventUpdater.fire("planned-dice-update");
+  }
+
+  isDicePlanned(dice: Dice) {
+    for (const [plannedCard, plannedDice] of this.pendingDicePlan) {
+      if (plannedDice.find((planned) => planned.dice.id === dice.id))
+        return true;
+    }
+    return false;
   }
 
   getColumnIndex(card: BattlefieldCard) {

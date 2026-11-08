@@ -6,15 +6,23 @@ import "./player-dice.scss";
 
 export function PlayerDice() {
   const gameState = useGameState();
-  useEventUpdater("dice-update");
+  useEventUpdater("dice-update", "planned-dice-update");
 
   // Show roll prompt when there are no active dice to show
   if (gameState.roundStage === RoundStage.A_RollDice)
     return <RollPrompt onRoll={() => gameState.rollPlayerDice()} />;
 
-  const dice = gameState.activeDice.map((dice) => (
-    <DiceDisplay key={`player-dice-display-${dice.id}`} dice={dice} />
-  ));
+  const dice = gameState.activeDice.map((dice) => {
+    const isPlanned = gameState.isDicePlanned(dice);
+
+    return (
+      <DiceDisplay
+        key={`player-dice-display-${dice.id}`}
+        dice={dice}
+        shadow={isPlanned}
+      />
+    );
+  });
 
   return <div className="player-dice">{dice}</div>;
 }
