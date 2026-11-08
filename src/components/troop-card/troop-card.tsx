@@ -1,7 +1,8 @@
 import { useEffect, useRef } from "react";
 import type { TroopCard } from "../../app-state/types";
+import { RoundStage } from "../../app-state/types";
 import { DiceDisplay } from "../dice-display/dice-display";
-import { useDiceDrag } from "../dice-drag-context";
+import { useItemDrag } from "../item-drag-context";
 import { DiceReq } from "../dice-req/dice-req";
 import { useGameState } from "../game-state-context";
 import { useEventUpdater } from "../hooks/use-event-updater";
@@ -17,17 +18,23 @@ export function TroopCard({ card }: TroopCardProps) {
 
   const gameState = useGameState();
   const cardElement = useRef<HTMLDivElement>(null);
-  const { registerDropTarget } = useDiceDrag();
+  const { isActiveDragItem, registerDropTarget, startDrag } = useItemDrag();
   const isValidChoice =
     gameState.pendingTroopSelection?.validChoices.includes(card);
 
   useEffect(() => {
     const element = cardElement.current;
     if (!element) return;
-    return registerDropTarget(element, (dice, pos) =>
-      gameState.dropDiceOnCard(dice.id, pos, card),
-    );
+    return registerDropTarget(element, (item, pos) => {
+      if (item.type === "dice")
+        gameState.dropDiceOnCard(item.dice.id, pos, card);
+    });
   }, [card, gameState, registerDropTarget]);
+
+  function handlePointerDown(event: React.PointerEvent<HTMLDivElement>) {
+    if (gameState.roundStage !== RoundStage.D_Action) return;
+    startDrag({ type: "card", card }, event);
+  }
 
   function onClick() {
     if (isValidChoice) {
@@ -35,7 +42,11 @@ export function TroopCard({ card }: TroopCardProps) {
     }
   }
 
-  const classes = ["troop-card", isValidChoice ? "active" : ""];
+  const classes = [
+    "troop-card",
+    isValidChoice ? "active" : "",
+    isActiveDragItem({ type: "card", card }) ? "dragging-source" : "",
+  ];
 
   const plannedDice = gameState.pendingDicePlan.get(card);
   const plannedDiceDisplays = plannedDice?.map((planned) => (
@@ -54,7 +65,12 @@ export function TroopCard({ card }: TroopCardProps) {
   ));
 
   return (
-    <div ref={cardElement} className={classes.join(" ")} onClick={onClick}>
+    <div
+      ref={cardElement}
+      className={classes.join(" ")}
+      onClick={onClick}
+      onPointerDown={handlePointerDown}
+    >
       {plannedDiceDisplays}
       <div className="body">
         <div className="dice-reqs">

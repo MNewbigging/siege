@@ -34,11 +34,3 @@
     opacity: 0.35;
   }
 }
-
-.dice-drag-preview {
-  position: fixed;
-  z-index: 10000;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  opacity: 0.9;
-}

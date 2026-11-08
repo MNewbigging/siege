@@ -8,25 +8,28 @@ import {
 } from "./types";
 
 // Removes a card in place, leaving an empty (undefined) slot rather than shifting the column
-export function removeCard(column: BattlefieldCard[], rowIndex: number) {
+export function removeCard(
+  column: (BattlefieldCard | undefined)[],
+  rowIndex: number,
+) {
   column[rowIndex] = undefined;
 }
 
 // Slides cards down toward the front (index 0), collapsing gaps to the top of the column
-export function slideColumnDown(column: BattlefieldCard[]) {
+export function slideColumnDown(column: (BattlefieldCard | undefined)[]) {
   const remaining = column.filter((card) => card !== undefined);
   const emptySlots = column.length - remaining.length;
   return [...remaining, ...new Array<undefined>(emptySlots).fill(undefined)];
 }
 
 export function slideBattlefieldDown(
-  battlefield: BattlefieldCard[][],
-): BattlefieldCard[][] {
+  battlefield: (BattlefieldCard | undefined)[][],
+): (BattlefieldCard | undefined)[][] {
   return battlefield.map(slideColumnDown);
 }
 
 export function getNearestSiegeEngines(
-  battlefield: BattlefieldCard[][],
+  battlefield: (BattlefieldCard | undefined)[][],
 ): SiegeEngineCard[] {
   return getSiegeEnginesAtRowExtreme(
     battlefield,
@@ -35,7 +38,7 @@ export function getNearestSiegeEngines(
 }
 
 export function getFarthestSiegeEngines(
-  battlefield: BattlefieldCard[][],
+  battlefield: (BattlefieldCard | undefined)[][],
 ): SiegeEngineCard[] {
   return getSiegeEnginesAtRowExtreme(
     battlefield,
@@ -48,7 +51,7 @@ function getTroopDefeatValue(troop: TroopCard): number {
 }
 
 export function getWeakestFrontTroops(
-  battlefield: BattlefieldCard[][],
+  battlefield: (BattlefieldCard | undefined)[][],
 ): TroopCard[] {
   return getFrontTroopsAtValueExtreme(
     battlefield,
@@ -57,7 +60,7 @@ export function getWeakestFrontTroops(
 }
 
 export function getStrongestFrontTroops(
-  battlefield: BattlefieldCard[][],
+  battlefield: (BattlefieldCard | undefined)[][],
 ): TroopCard[] {
   return getFrontTroopsAtValueExtreme(
     battlefield,
@@ -66,7 +69,7 @@ export function getStrongestFrontTroops(
 }
 
 function getFrontTroopsAtValueExtreme(
-  battlefield: BattlefieldCard[][],
+  battlefield: (BattlefieldCard | undefined)[][],
   isBetterValue: (value: number, currentValue: number) => boolean,
 ): TroopCard[] {
   let selectedValue: number | undefined;
@@ -89,7 +92,7 @@ function getFrontTroopsAtValueExtreme(
 }
 
 function getSiegeEnginesAtRowExtreme(
-  battlefield: BattlefieldCard[][],
+  battlefield: (BattlefieldCard | undefined)[][],
   isBetterRow: (rowIndex: number, currentRowIndex: number) => boolean,
 ) {
   let selectedRowIndex: number | undefined;
@@ -118,7 +121,7 @@ function getSiegeEnginesAtRowExtreme(
 }
 
 export function getTroopsByType(
-  battlefield: BattlefieldCard[][],
+  battlefield: (BattlefieldCard | undefined)[][],
   type: AttackType,
 ) {
   const troops: TroopCard[] = [];

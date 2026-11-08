@@ -1,22 +1,39 @@
+import { useEffect, useRef } from "react";
 import { useGameState } from "../game-state-context";
-import { BattlefieldCard } from "../../app-state/types";
+import { TroopCard } from "../../app-state/types";
+import { useItemDrag } from "../item-drag-context";
+import { useEventUpdater } from "../hooks/use-event-updater";
 import "./player-hand.scss";
 
 export function PlayerHand() {
   const gameState = useGameState();
+  const handElement = useRef<HTMLDivElement>(null);
+  const { registerDropTarget } = useItemDrag();
+  useEventUpdater("battlefield-card-defeated");
+
+  useEffect(() => {
+    const element = handElement.current;
+    if (!element) return;
+    return registerDropTarget(element, (item) => {
+      if (item.type === "card") gameState.defeatCard(item.card);
+    });
+  }, [gameState, registerDropTarget]);
+
   const thumbnails = gameState.playerHand.map((card, index) => (
     <CardThumb key={`card-thumb-${index}`} card={card} />
   ));
 
-  return <div className="player-hand">{thumbnails}</div>;
+  return (
+    <div ref={handElement} className="player-hand">
+      {thumbnails}
+    </div>
+  );
 }
 
 interface CardThumbProps {
-  card: BattlefieldCard;
+  card: TroopCard;
 }
 
 function CardThumb({ card }: CardThumbProps) {
-  if (!card) return null;
-
   return <div className="card-thumb">{card.effect}</div>;
 }

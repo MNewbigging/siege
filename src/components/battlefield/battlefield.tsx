@@ -8,10 +8,12 @@ import {
 import { EmptyCard } from "../empty-card/empty-card";
 import { SiegeCard } from "../siege-card/siege-card";
 import { TroopCard } from "../troop-card/troop-card";
+import { useEventUpdater } from "../hooks/use-event-updater";
 import "./battlefield.scss";
 
 export function Battlefield() {
   const gameState = useGameState();
+  useEventUpdater("battlefield-update", "battlefield-card-defeated");
 
   // A column for every array in the battlefield
   const columns = gameState.battlefield.map((column, index) => (
@@ -22,7 +24,7 @@ export function Battlefield() {
 }
 
 interface BattlefieldColumnProps {
-  column: BattlefieldCard[];
+  column: (BattlefieldCard | undefined)[];
   colIdx: number;
 }
 
@@ -31,7 +33,7 @@ function BattlefieldColumn({ column, colIdx }: BattlefieldColumnProps) {
 
   // Use the correct component for each card type
   column.forEach((card) => {
-    if (!card) {
+    if (card === undefined) {
       cards.push(<EmptyCard />);
     }
 

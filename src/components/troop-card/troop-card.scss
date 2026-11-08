@@ -15,6 +15,10 @@
     cursor: pointer;
   }
 
+  &.dragging-source {
+    opacity: 0.4;
+  }
+
   .body {
     position: relative;
     flex: 2 1 100%;

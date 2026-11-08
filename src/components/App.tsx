@@ -9,7 +9,7 @@ import { TowerWall } from "./tower-wall/tower-wall";
 import { EventCardManager } from "./event-card/event-card-manager";
 import { EventCardBrowser } from "./event-card-browser/event-card-browser";
 import { TroopCardBrowser } from "./troop-card-browser/troop-card-browser";
-import { DiceDragProvider } from "./dice-drag-context";
+import { ItemDragProvider } from "./item-drag-context";
 
 export function App() {
   useEventUpdater("game-started");
@@ -18,7 +18,7 @@ export function App() {
 
   return (
     <GameStateProvider value={appState.gameState}>
-      <DiceDragProvider>
+      <ItemDragProvider>
         <div className="ui-root">
           <Battlefield />
           <TowerWall />
@@ -27,7 +27,7 @@ export function App() {
         <EventCardManager />
         <TroopCardBrowser />
         <EventCardBrowser />
-      </DiceDragProvider>
+      </ItemDragProvider>
     </GameStateProvider>
   );
 }

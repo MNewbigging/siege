@@ -1,7 +1,7 @@
 import { Dice, RoundStage } from "../../app-state/types";
 import { useGameState } from "../game-state-context";
 import { useEventUpdater } from "../hooks/use-event-updater";
-import { useDiceDrag } from "../dice-drag-context";
+import { useItemDrag } from "../item-drag-context";
 import "./dice-display.scss";
 
 interface DiceDisplayProps {
@@ -12,7 +12,7 @@ interface DiceDisplayProps {
 export function DiceDisplay({ dice, shadow }: DiceDisplayProps) {
   useEventUpdater("round-stage-update");
   const gameState = useGameState();
-  const { activeDrag, startDrag } = useDiceDrag();
+  const { isActiveDragItem, startDrag } = useItemDrag();
 
   // If there is a pending dice selection, highlight if this dice is valid for selection
   const selection = gameState.pendingDiceSelection;
@@ -30,7 +30,7 @@ export function DiceDisplay({ dice, shadow }: DiceDisplayProps) {
 
   function handlePointerDown(event: React.PointerEvent<HTMLDivElement>) {
     if (shadow || gameState.roundStage !== RoundStage.D_Action) return;
-    startDrag(dice, event);
+    startDrag({ type: "dice", dice }, event);
   }
 
   const diceClass = [
@@ -38,9 +38,7 @@ export function DiceDisplay({ dice, shadow }: DiceDisplayProps) {
     dice.type,
     isValidSelection ? "highlight" : "",
     shadow ? "shadow" : "",
-    activeDrag?.isDragging && activeDrag.dice.id === dice.id
-      ? "dragging-source"
-      : "",
+    isActiveDragItem({ type: "dice", dice }) ? "dragging-source" : "",
   ].join(" ");
 
   return (

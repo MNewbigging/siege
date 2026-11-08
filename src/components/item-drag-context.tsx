@@ -8,10 +8,14 @@ import {
   useRef,
   useState,
 } from "react";
-import { Dice } from "../app-state/types";
+import { BattlefieldCard, Dice } from "../app-state/types";
+import "./item-drag-context.scss";
 
-interface DiceDrag {
-  dice: Dice;
+export type DragItem =
+  { type: "dice"; dice: Dice } | { type: "card"; card: BattlefieldCard };
+
+interface ItemDrag {
+  item: DragItem;
   pointerId: number;
   startX: number;
   startY: number;
@@ -20,34 +24,38 @@ interface DiceDrag {
   isDragging: boolean;
 }
 
-type DropHandler = (dice: Dice, pos: { x: number; y: number }) => void;
+type DropHandler = (item: DragItem, pos: { x: number; y: number }) => void;
 
-interface DiceDragContextValue {
-  activeDrag: DiceDrag | null;
-  startDrag: (dice: Dice, event: React.PointerEvent<HTMLDivElement>) => void;
+interface ItemDragContextValue {
+  activeDrag: ItemDrag | null;
+  isActiveDragItem: (item: DragItem) => boolean;
+  startDrag: (
+    item: DragItem,
+    event: React.PointerEvent<HTMLDivElement>,
+  ) => void;
   registerDropTarget: (element: HTMLElement, onDrop: DropHandler) => () => void;
 }
 
-const DiceDragContext = createContext<DiceDragContextValue | null>(null);
+const ItemDragContext = createContext<ItemDragContextValue | null>(null);
 
-export function DiceDragProvider({ children }: PropsWithChildren) {
-  const [activeDrag, setActiveDrag] = useState<DiceDrag | null>(null);
-  const activeDragRef = useRef<DiceDrag | null>(null);
+export function ItemDragProvider({ children }: PropsWithChildren) {
+  const [activeDrag, setActiveDrag] = useState<ItemDrag | null>(null);
+  const activeDragRef = useRef<ItemDrag | null>(null);
   const dropTargets = useRef(new Map<HTMLElement, DropHandler>());
 
-  const updateDrag = (drag: DiceDrag | null) => {
+  const updateDrag = (drag: ItemDrag | null) => {
     activeDragRef.current = drag;
     setActiveDrag(drag);
   };
 
   const startDrag = useCallback(
-    (dice: Dice, event: React.PointerEvent<HTMLDivElement>) => {
+    (item: DragItem, event: React.PointerEvent<HTMLDivElement>) => {
       if (!event.isPrimary || event.button !== 0 || activeDragRef.current)
         return;
 
       event.preventDefault();
       updateDrag({
-        dice,
+        item,
         pointerId: event.pointerId,
         startX: event.clientX,
         startY: event.clientY,
@@ -90,8 +98,6 @@ export function DiceDragProvider({ children }: PropsWithChildren) {
       if (!drag || drag.pointerId !== event.pointerId) return;
 
       if (drag.isDragging) {
-        let target: [HTMLElement, DropHandler] | undefined;
-
         const hit = document.elementFromPoint(event.clientX, event.clientY);
         if (hit) {
           const target = [...dropTargets.current].find(
@@ -101,7 +107,7 @@ export function DiceDragProvider({ children }: PropsWithChildren) {
           if (target) {
             const [element, onDrop] = target;
             const rect = element.getBoundingClientRect();
-            onDrop(drag.dice, {
+            onDrop(drag.item, {
               x: (event.clientX - rect.left) / rect.width,
               y: (event.clientY - rect.top) / rect.height,
             });
@@ -128,28 +134,50 @@ export function DiceDragProvider({ children }: PropsWithChildren) {
   }, []);
 
   const contextValue = useMemo(
-    () => ({ activeDrag, startDrag, registerDropTarget }),
+    () => ({
+      activeDrag,
+      isActiveDragItem: (item: DragItem) => {
+        if (!activeDrag?.isDragging || activeDrag.item.type !== item.type)
+          return false;
+
+        return item.type === "dice"
+          ? activeDrag.item.type === "dice" &&
+              activeDrag.item.dice.id === item.dice.id
+          : activeDrag.item.type === "card" &&
+              activeDrag.item.card === item.card;
+      },
+      startDrag,
+      registerDropTarget,
+    }),
     [activeDrag, startDrag, registerDropTarget],
   );
 
   return (
-    <DiceDragContext.Provider value={contextValue}>
+    <ItemDragContext.Provider value={contextValue}>
       {children}
-      {activeDrag?.isDragging && (
-        <div
-          className={`dice-display ${activeDrag.dice.type} dice-drag-preview`}
-          style={{ left: activeDrag.x, top: activeDrag.y }}
-        >
-          {activeDrag.dice.value}
-        </div>
-      )}
-    </DiceDragContext.Provider>
+      {activeDrag?.isDragging &&
+        (activeDrag.item.type === "dice" ? (
+          <div
+            className={`dice-display ${activeDrag.item.dice.type} dice-drag-preview`}
+            style={{ left: activeDrag.x, top: activeDrag.y }}
+          >
+            {activeDrag.item.dice.value}
+          </div>
+        ) : (
+          <div
+            className="card-drag-preview"
+            style={{ left: activeDrag.x, top: activeDrag.y }}
+          >
+            {activeDrag.item.card.name}
+          </div>
+        ))}
+    </ItemDragContext.Provider>
   );
 }
 
-export function useDiceDrag() {
-  const context = useContext(DiceDragContext);
+export function useItemDrag() {
+  const context = useContext(ItemDragContext);
   if (!context)
-    throw new Error("useDiceDrag must be used within DiceDragProvider");
+    throw new Error("useItemDrag must be used within ItemDragProvider");
   return context;
 }

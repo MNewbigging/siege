@@ -4,7 +4,7 @@ import "./player-info.scss";
 
 export function PlayerInfo() {
   const gameState = useGameState();
-  useEventUpdater("round-stage-update");
+  useEventUpdater("round-stage-update", "battlefield-card-defeated");
 
   return (
     <div className="player-info">
@@ -12,6 +12,7 @@ export function PlayerInfo() {
         Round {gameState.currentRound} of {gameState.maxRounds}
       </div>
       <div>Stage: {gameState.roundStage}</div>
+      <div>Siege cards defeated: {gameState.defeatedSiegeCards}</div>
     </div>
   );
 }

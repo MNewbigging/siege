@@ -19,8 +19,8 @@ export interface TroopCard {
   strengthTokens?: number;
 }
 
-export function isTroopCard(card: any): card is TroopCard {
-  return "diceToDefeatA" in card;
+export function isTroopCard(card: unknown): card is TroopCard {
+  return typeof card === "object" && card !== null && "diceToDefeatA" in card;
 }
 
 export interface SiegeEngineRowData {
@@ -50,11 +50,11 @@ export interface SiegeEngineCard {
   strengthTokens?: number;
 }
 
-export function isSiegeCard(card: any): card is SiegeEngineCard {
-  return "rowData" in card;
+export function isSiegeCard(card: unknown): card is SiegeEngineCard {
+  return typeof card === "object" && card !== null && "rowData" in card;
 }
 
-export type BattlefieldCard = SiegeEngineCard | TroopCard | undefined;
+export type BattlefieldCard = SiegeEngineCard | TroopCard;
 
 export enum RoundStage {
   A_RollDice = "Rolling dice",

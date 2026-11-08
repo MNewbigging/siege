@@ -14,6 +14,7 @@ import {
   AttackType,
   BattlefieldCard,
   Dice,
+  isTroopCard,
   RoundStage,
   SiegeEngineCard,
   TroopCard,
@@ -49,7 +50,7 @@ export class GameState {
   championDiscardDeck: Champion[] = [];
   eventDeck: EventCard[];
   playerHand: TroopCard[];
-  battlefield: BattlefieldCard[][] = []; // by column, index 0 is front/vanguard
+  battlefield: (BattlefieldCard | undefined)[][] = []; // by column, index 0 is front/vanguard
   activeDice: Dice[] = [];
   spentDice: Dice[] = [];
   activeChampions: Champion[] = [];
@@ -65,6 +66,7 @@ export class GameState {
   pendingTurretSelection?: PendingTurretSelection;
   pendingTroopSelection?: PendingTroopSelection;
   pendingDicePlan = new Map<BattlefieldCard, PlannedDice[]>();
+  defeatedSiegeCards = 0;
 
   strengthDice: number;
   holyDice: number;
@@ -173,12 +175,26 @@ export class GameState {
     }
   }
 
+  defeatCard(card: BattlefieldCard) {
+    const column = this.battlefield.find((cards) => cards.includes(card));
+    if (!column || this.roundStage !== RoundStage.D_Action) return;
+
+    // todo actually check if it can be defeated first (but probably before this fn)
+    const rowIndex = column.indexOf(card);
+    column[rowIndex] = undefined;
+    this.pendingDicePlan.delete(card);
+    if (isTroopCard(card)) this.playerHand.push(card);
+    else this.defeatedSiegeCards++;
+
+    eventUpdater.fire("battlefield-card-defeated");
+  }
+
   getColumnIndex(card: BattlefieldCard) {
     return this.battlefield.findIndex((col) => col.includes(card));
   }
 
   private setupBattlefield() {
-    const battlefield: BattlefieldCard[][] = [];
+    const battlefield: (BattlefieldCard | undefined)[][] = [];
 
     // There are 5 columns on the battlefield
     for (let col = 0; col < 5; col++) {
@@ -186,11 +202,11 @@ export class GameState {
 
       // Put 4 troops in first 4 spots
       for (let i = 0; i < 4; i++) {
-        column.push(this.troopDeck.pop());
+        column.push(this.troopDeck.pop()!);
       }
 
       // Seige engine at the top in last spot
-      column.push(this.siegeDeck.pop());
+      column.push(this.siegeDeck.pop()!);
 
       battlefield.push(column);
     }

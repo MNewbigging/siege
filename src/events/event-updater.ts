@@ -9,6 +9,7 @@ export type GameEvent =
   | "event-browser-update"
   | "siege-engine-update"
   | "battlefield-update"
+  | "battlefield-card-defeated"
   | "troop-update"
   | "planned-dice-update";
 

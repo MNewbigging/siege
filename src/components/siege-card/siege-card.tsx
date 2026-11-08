@@ -1,9 +1,9 @@
 import { ReactElement, useEffect, useRef } from "react";
-import { SiegeEngineCard } from "../../app-state/types";
+import { RoundStage, SiegeEngineCard } from "../../app-state/types";
 import "./siege-card.scss";
 import { useEventUpdater } from "../hooks/use-event-updater";
 import { useGameState } from "../game-state-context";
-import { useDiceDrag } from "../dice-drag-context";
+import { useItemDrag } from "../item-drag-context";
 import { TokensDisplay } from "../tokens-display/tokens-display";
 import { DiceDisplay } from "../dice-display/dice-display";
 
@@ -14,7 +14,7 @@ interface SiegeCardProps {
 export function SiegeCard({ card }: SiegeCardProps) {
   const gameState = useGameState();
   const cardElement = useRef<HTMLDivElement>(null);
-  const { registerDropTarget } = useDiceDrag();
+  const { isActiveDragItem, registerDropTarget, startDrag } = useItemDrag();
   useEventUpdater("siege-engine-update", "planned-dice-update");
 
   const isValidChoice =
@@ -23,10 +23,16 @@ export function SiegeCard({ card }: SiegeCardProps) {
   useEffect(() => {
     const element = cardElement.current;
     if (!element) return;
-    return registerDropTarget(element, (dice, pos) =>
-      gameState.dropDiceOnCard(dice.id, pos, card),
-    );
+    return registerDropTarget(element, (item, pos) => {
+      if (item.type === "dice")
+        gameState.dropDiceOnCard(item.dice.id, pos, card);
+    });
   }, [card, gameState, registerDropTarget]);
+
+  function handlePointerDown(event: React.PointerEvent<HTMLDivElement>) {
+    if (gameState.roundStage !== RoundStage.D_Action) return;
+    startDrag({ type: "card", card }, event);
+  }
 
   function onClick() {
     if (isValidChoice) {
@@ -50,10 +56,19 @@ export function SiegeCard({ card }: SiegeCardProps) {
     </div>
   ));
 
-  const cardClasses = ["siege-card", isValidChoice ? "highlight-active" : ""];
+  const cardClasses = [
+    "siege-card",
+    isValidChoice ? "highlight-active" : "",
+    isActiveDragItem({ type: "card", card }) ? "dragging-source" : "",
+  ];
 
   return (
-    <div ref={cardElement} className={cardClasses.join(" ")} onClick={onClick}>
+    <div
+      ref={cardElement}
+      className={cardClasses.join(" ")}
+      onClick={onClick}
+      onPointerDown={handlePointerDown}
+    >
       {plannedDiceDisplays}
       <div className="body">
         <RangesBlock card={card} />

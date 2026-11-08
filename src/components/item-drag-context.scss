@@ -1,0 +1,17 @@
+.dice-drag-preview,
+.card-drag-preview {
+  position: fixed;
+  z-index: 10000;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  opacity: 0.9;
+}
+
+.card-drag-preview {
+  width: 120px;
+  min-height: 60px;
+  padding: 8px;
+  border: 1px solid black;
+  border-radius: 4px;
+  background: white;
+}

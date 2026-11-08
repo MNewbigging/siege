@@ -6,7 +6,11 @@ import "./player-dice.scss";
 
 export function PlayerDice() {
   const gameState = useGameState();
-  useEventUpdater("dice-update", "planned-dice-update");
+  useEventUpdater(
+    "dice-update",
+    "planned-dice-update",
+    "battlefield-card-defeated",
+  );
 
   // Show roll prompt when there are no active dice to show
   if (gameState.roundStage === RoundStage.A_RollDice)
