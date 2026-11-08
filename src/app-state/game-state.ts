@@ -122,9 +122,27 @@ export class GameState {
     pos: { x: number; y: number },
     card: TroopCard,
   ) {
+    // Get the dice
     const dice = this.activeDice.find((die) => diceId === die.id);
     if (!dice) return;
 
+    // This dice might be moving from another card
+    for (const [plannedCard, plannedDice] of this.pendingDiceSpend) {
+      // Remove the dropped dice from this card
+      const remainingDice = plannedDice.filter(
+        (planned) => planned.dice.id !== diceId,
+      );
+
+      // If nothing was removed, it was never here! Check other cards
+      if (remainingDice.length === plannedDice.length) continue;
+
+      // Otherwise, update the old card with remaining dice (minus dropped dice)
+      if (remainingDice.length)
+        this.pendingDiceSpend.set(plannedCard, remainingDice);
+      else this.pendingDiceSpend.delete(plannedCard); // unless that was the only one, so delete
+    }
+
+    // Update new card with dropped dice
     const plannedDice = this.pendingDiceSpend.get(card) ?? [];
     plannedDice.push({ dice, pos });
     this.pendingDiceSpend.set(card, plannedDice);

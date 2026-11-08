@@ -48,6 +48,7 @@ export function TroopCard({ card }: TroopCardProps) {
       key={`planned-dice-${plannedDice.dice.id}`}
       style={{
         position: "absolute",
+        zIndex: 1,
         transform: "translate(-50%, -50%)",
         left: `${plannedDice.pos.x * 100}%`,
         top: `${plannedDice.pos.y * 100}%`,
