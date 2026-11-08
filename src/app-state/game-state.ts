@@ -21,47 +21,17 @@ import {
 } from "./types";
 import { diceRoll } from "./utils";
 import { Champion } from "./champion-cards";
+import {
+  PendingDiceSelection,
+  PendingChampionSelection,
+  PendingTroopCardBrowser,
+  PendingEventCardBrowser,
+  PendingSiegeSelection,
+  PendingEventSelection,
+  PendingTurretSelection,
+  PendingTroopSelection,
+} from "./pending-selection-types";
 ("./siege-engine-cards");
-
-// Todo put in own pending-selection-types file
-interface PendingDiceSelection {
-  validChoices: Dice[];
-  onSelect: (dice: Dice) => void;
-}
-
-interface PendingChampionSelection {
-  validChoices: Champion[];
-  onSelect: (champion: Champion) => void;
-}
-
-interface PendingSiegeSelection {
-  validChoices: SiegeEngineCard[];
-  onSelect: (siege: SiegeEngineCard) => void;
-}
-interface PendingTroopCardBrowser {
-  cards: TroopCard[];
-  onAccept: (cards: TroopCard[]) => void;
-}
-
-interface PendingEventCardBrowser {
-  cards: EventCard[];
-  onAccept: (cards: EventCard[]) => void;
-}
-
-interface PendingEventSelection {
-  eventCard: EventCard;
-  onSelect: () => void;
-}
-
-interface PendingTurretSelection {
-  validChoices: Turret[];
-  onSelect: (turret: Turret) => void;
-}
-
-interface PendingTroopSelection {
-  validChoices: TroopCard[];
-  onSelect: (troop: TroopCard) => void;
-}
 
 export class GameState {
   currentRound = 1;
