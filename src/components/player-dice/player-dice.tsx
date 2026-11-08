@@ -12,8 +12,8 @@ export function PlayerDice() {
   if (gameState.roundStage === RoundStage.A_RollDice)
     return <RollPrompt onRoll={() => gameState.rollPlayerDice()} />;
 
-  const dice = gameState.activeDice.map((dice, index) => (
-    <DiceDisplay key={`player-dice-display-${index}`} dice={dice} />
+  const dice = gameState.activeDice.map((dice) => (
+    <DiceDisplay key={`player-dice-display-${dice.id}`} dice={dice} />
   ));
 
   return <div className="player-dice">{dice}</div>;
