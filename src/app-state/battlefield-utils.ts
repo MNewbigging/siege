@@ -44,7 +44,7 @@ export function getFarthestSiegeEngines(
 }
 
 function getTroopDefeatValue(troop: TroopCard): number {
-  return troop.toDefeatA.value + (troop.toDefeatB?.value ?? 0);
+  return troop.diceToDefeatA.value + (troop.diceToDefeatB?.value ?? 0);
 }
 
 export function getWeakestFrontTroops(

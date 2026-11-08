@@ -35,8 +35,10 @@ export function makeTroopDeck() {
     for (let i = 0; i < count; i++) {
       troopDeck.push({
         ...card,
-        toDefeatA: { ...card.toDefeatA },
-        toDefeatB: card.toDefeatB ? { ...card.toDefeatB } : undefined,
+        diceToDefeatA: { ...card.diceToDefeatA },
+        diceToDefeatB: card.diceToDefeatB
+          ? { ...card.diceToDefeatB }
+          : undefined,
       });
     }
   });

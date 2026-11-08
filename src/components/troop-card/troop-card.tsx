@@ -37,9 +37,15 @@ export function TroopCard({ card }: TroopCardProps) {
     >
       <div className="body">
         <div className="dice-reqs">
-          <DiceReq type={card.toDefeatA.type} value={card.toDefeatA.value} />
-          {card.toDefeatB && (
-            <DiceReq type={card.toDefeatB.type} value={card.toDefeatB.value} />
+          <DiceReq
+            type={card.diceToDefeatA.type}
+            value={card.diceToDefeatA.value}
+          />
+          {card.diceToDefeatB && (
+            <DiceReq
+              type={card.diceToDefeatB.type}
+              value={card.diceToDefeatB.value}
+            />
           )}
         </div>
         {(card.magicTokens || card.strengthTokens) && (
