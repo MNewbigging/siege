@@ -1,5 +1,7 @@
 .dice-display {
   user-select: none;
+  touch-action: none;
+  cursor: grab;
   width: 40px;
   height: 40px;
   border-radius: 4px;
@@ -25,5 +27,18 @@
 
   &.shadow {
     opacity: 0.5;
+    cursor: default;
   }
+
+  &.dragging-source {
+    opacity: 0.35;
+  }
+}
+
+.dice-drag-preview {
+  position: fixed;
+  z-index: 10000;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  opacity: 0.9;
 }

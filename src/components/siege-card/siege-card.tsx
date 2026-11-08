@@ -1,8 +1,9 @@
-import { ReactElement } from "react";
+import { ReactElement, useEffect, useRef } from "react";
 import { SiegeEngineCard } from "../../app-state/types";
 import "./siege-card.scss";
 import { useEventUpdater } from "../hooks/use-event-updater";
 import { useGameState } from "../game-state-context";
+import { useDiceDrag } from "../dice-drag-context";
 import { TokensDisplay } from "../tokens-display/tokens-display";
 import { DiceDisplay } from "../dice-display/dice-display";
 
@@ -12,32 +13,25 @@ interface SiegeCardProps {
 
 export function SiegeCard({ card }: SiegeCardProps) {
   const gameState = useGameState();
+  const cardElement = useRef<HTMLDivElement>(null);
+  const { registerDropTarget } = useDiceDrag();
   useEventUpdater("siege-engine-update", "planned-dice-update");
 
   const isValidChoice =
     gameState.pendingSiegeSelection?.validChoices.includes(card);
 
+  useEffect(() => {
+    const element = cardElement.current;
+    if (!element) return;
+    return registerDropTarget(element, (dice, pos) =>
+      gameState.dropDiceOnCard(dice.id, pos, card),
+    );
+  }, [card, gameState, registerDropTarget]);
+
   function onClick() {
     if (isValidChoice) {
       gameState.pendingSiegeSelection?.onSelect(card);
     }
-  }
-
-  function handleDragOver(event: React.DragEvent<HTMLDivElement>) {
-    event.preventDefault();
-    event.dataTransfer.dropEffect = "move";
-  }
-
-  function handleDrop(event: React.DragEvent<HTMLDivElement>) {
-    event.preventDefault();
-
-    // Get normalised dorp position on card
-    const rect = event.currentTarget.getBoundingClientRect();
-    const x = (event.clientX - rect.left) / rect.width;
-    const y = (event.clientY - rect.top) / rect.height;
-
-    const diceId = event.dataTransfer.getData("text/plain");
-    gameState.dropDiceOnCard(diceId, { x, y }, card);
   }
 
   const plannedDice = gameState.pendingDicePlan.get(card);
@@ -59,12 +53,7 @@ export function SiegeCard({ card }: SiegeCardProps) {
   const cardClasses = ["siege-card", isValidChoice ? "highlight-active" : ""];
 
   return (
-    <div
-      className={cardClasses.join(" ")}
-      onClick={onClick}
-      onDragOver={handleDragOver}
-      onDrop={handleDrop}
-    >
+    <div ref={cardElement} className={cardClasses.join(" ")} onClick={onClick}>
       {plannedDiceDisplays}
       <div className="body">
         <RangesBlock card={card} />

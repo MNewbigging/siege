@@ -1,5 +1,7 @@
+import { useEffect, useRef } from "react";
 import type { TroopCard } from "../../app-state/types";
 import { DiceDisplay } from "../dice-display/dice-display";
+import { useDiceDrag } from "../dice-drag-context";
 import { DiceReq } from "../dice-req/dice-req";
 import { useGameState } from "../game-state-context";
 import { useEventUpdater } from "../hooks/use-event-updater";
@@ -14,30 +16,23 @@ export function TroopCard({ card }: TroopCardProps) {
   useEventUpdater("troop-update", "planned-dice-update");
 
   const gameState = useGameState();
+  const cardElement = useRef<HTMLDivElement>(null);
+  const { registerDropTarget } = useDiceDrag();
   const isValidChoice =
     gameState.pendingTroopSelection?.validChoices.includes(card);
+
+  useEffect(() => {
+    const element = cardElement.current;
+    if (!element) return;
+    return registerDropTarget(element, (dice, pos) =>
+      gameState.dropDiceOnCard(dice.id, pos, card),
+    );
+  }, [card, gameState, registerDropTarget]);
 
   function onClick() {
     if (isValidChoice) {
       gameState.pendingTroopSelection?.onSelect(card);
     }
-  }
-
-  function handleDragOver(event: React.DragEvent<HTMLDivElement>) {
-    event.preventDefault();
-    event.dataTransfer.dropEffect = "move";
-  }
-
-  function handleDrop(event: React.DragEvent<HTMLDivElement>) {
-    event.preventDefault();
-
-    // Get normalised dorp position on card
-    const rect = event.currentTarget.getBoundingClientRect();
-    const x = (event.clientX - rect.left) / rect.width;
-    const y = (event.clientY - rect.top) / rect.height;
-
-    const diceId = event.dataTransfer.getData("text/plain");
-    gameState.dropDiceOnCard(diceId, { x, y }, card);
   }
 
   const classes = ["troop-card", isValidChoice ? "active" : ""];
@@ -59,12 +54,7 @@ export function TroopCard({ card }: TroopCardProps) {
   ));
 
   return (
-    <div
-      className={classes.join(" ")}
-      onClick={onClick}
-      onDragOver={handleDragOver}
-      onDrop={handleDrop}
-    >
+    <div ref={cardElement} className={classes.join(" ")} onClick={onClick}>
       {plannedDiceDisplays}
       <div className="body">
         <div className="dice-reqs">
