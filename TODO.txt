@@ -1,3 +1,11 @@
+08/11:
++ Added drag and drop capability via item-drag-context
++ Can drag toop and seige cards to player hand, troops are added to hand
+Next: validate dropped cards and show any error messages/states
+
+
+
+
 Siege engines:
 - breach tower still to do
 
