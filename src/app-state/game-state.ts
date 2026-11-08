@@ -33,6 +33,11 @@ import {
 } from "./pending-selection-types";
 ("./siege-engine-cards");
 
+interface PlannedDice {
+  dice: Dice;
+  pos: { x: number; y: number };
+}
+
 export class GameState {
   currentRound = 1;
   maxRounds = 7;
@@ -59,6 +64,7 @@ export class GameState {
   pendingEventSelection?: PendingEventSelection;
   pendingTurretSelection?: PendingTurretSelection;
   pendingTroopSelection?: PendingTroopSelection;
+  pendingDiceSpend = new Map<TroopCard, PlannedDice[]>();
 
   strengthDice: number;
   holyDice: number;
@@ -109,6 +115,21 @@ export class GameState {
     eventUpdater.fire("dice-update");
 
     this.toStage(RoundStage.B_ResolveSiege);
+  }
+
+  dropDiceOnCard(
+    diceId: string,
+    pos: { x: number; y: number },
+    card: TroopCard,
+  ) {
+    const dice = this.activeDice.find((die) => diceId === die.id);
+    if (!dice) return;
+
+    const plannedDice = this.pendingDiceSpend.get(card) ?? [];
+    plannedDice.push({ dice, pos });
+    this.pendingDiceSpend.set(card, plannedDice);
+
+    console.log("dropped dice on card", this.pendingDiceSpend);
   }
 
   getColumnIndex(card: BattlefieldCard) {

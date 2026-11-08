@@ -27,6 +27,18 @@ export function TroopCard({ card }: TroopCardProps) {
     event.dataTransfer.dropEffect = "move";
   }
 
+  function handleDrop(event: React.DragEvent<HTMLDivElement>) {
+    event.preventDefault();
+
+    // Get normalised dorp position on card
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width;
+    const y = (event.clientY - rect.top) / rect.height;
+
+    const diceId = event.dataTransfer.getData("text/plain");
+    gameState.dropDiceOnCard(diceId, { x, y }, card);
+  }
+
   const classes = ["troop-card", isValidChoice ? "active" : ""];
 
   return (
@@ -34,6 +46,7 @@ export function TroopCard({ card }: TroopCardProps) {
       className={classes.join(" ")}
       onClick={onClick}
       onDragOver={handleDragOver}
+      onDrop={handleDrop}
     >
       <div className="body">
         <div className="dice-reqs">

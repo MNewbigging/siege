@@ -20,6 +20,11 @@ export function DiceDisplay({ dice }: DiceDisplayProps) {
     }
   }
 
+  function handleDragStart(event: React.DragEvent<HTMLDivElement>) {
+    event.dataTransfer.setData("text/plain", dice.id);
+    event.dataTransfer.effectAllowed = "move";
+  }
+
   const diceClass = [
     "dice-display",
     dice.type,
@@ -27,7 +32,12 @@ export function DiceDisplay({ dice }: DiceDisplayProps) {
   ].join(" ");
 
   return (
-    <div className={diceClass} onClick={onClick} draggable>
+    <div
+      className={diceClass}
+      onClick={onClick}
+      onDragStart={handleDragStart}
+      draggable
+    >
       {dice.value}
     </div>
   );
