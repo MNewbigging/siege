@@ -27,7 +27,7 @@ export function DiceDisplay({ dice }: DiceDisplayProps) {
   ].join(" ");
 
   return (
-    <div className={diceClass} onClick={onClick}>
+    <div className={diceClass} onClick={onClick} draggable>
       {dice.value}
     </div>
   );

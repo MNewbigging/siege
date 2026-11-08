@@ -1,12 +1,13 @@
-import { Dice } from "../../app-state/types";
+import { AttackType, Dice } from "../../app-state/types";
 import "./dice-req.scss";
 
 interface DiceReqProps {
-  dice: Dice;
+  type: AttackType;
+  value: number;
 }
 
-export function DiceReq({ dice }: DiceReqProps) {
-  const classes = ["dice-req", dice.type].join(" ");
+export function DiceReq({ type, value }: DiceReqProps) {
+  const classes = ["dice-req", type].join(" ");
 
-  return <div className={classes}>{dice.value}</div>;
+  return <div className={classes}>{value}</div>;
 }

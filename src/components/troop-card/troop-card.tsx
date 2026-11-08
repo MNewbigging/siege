@@ -22,14 +22,25 @@ export function TroopCard({ card }: TroopCardProps) {
     }
   }
 
+  function handleDragOver(event: React.DragEvent<HTMLDivElement>) {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "move";
+  }
+
   const classes = ["troop-card", isValidChoice ? "active" : ""];
 
   return (
-    <div className={classes.join(" ")} onClick={onClick}>
+    <div
+      className={classes.join(" ")}
+      onClick={onClick}
+      onDragOver={handleDragOver}
+    >
       <div className="body">
         <div className="dice-reqs">
-          <DiceReq dice={card.toDefeatA} />
-          {card.toDefeatB && <DiceReq dice={card.toDefeatB} />}
+          <DiceReq type={card.toDefeatA.type} value={card.toDefeatA.value} />
+          {card.toDefeatB && (
+            <DiceReq type={card.toDefeatB.type} value={card.toDefeatB.value} />
+          )}
         </div>
         {(card.magicTokens || card.strengthTokens) && (
           <TokensDisplay
