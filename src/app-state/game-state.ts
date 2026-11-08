@@ -64,7 +64,7 @@ export class GameState {
   pendingEventSelection?: PendingEventSelection;
   pendingTurretSelection?: PendingTurretSelection;
   pendingTroopSelection?: PendingTroopSelection;
-  pendingDicePlan = new Map<TroopCard, PlannedDice[]>();
+  pendingDicePlan = new Map<BattlefieldCard, PlannedDice[]>();
 
   strengthDice: number;
   holyDice: number;
@@ -120,7 +120,7 @@ export class GameState {
   dropDiceOnCard(
     diceId: string,
     pos: { x: number; y: number },
-    card: TroopCard,
+    card: BattlefieldCard,
   ) {
     // Get the dice
     const dice = this.activeDice.find((die) => diceId === die.id);

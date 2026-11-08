@@ -43,18 +43,18 @@ export function TroopCard({ card }: TroopCardProps) {
   const classes = ["troop-card", isValidChoice ? "active" : ""];
 
   const plannedDice = gameState.pendingDicePlan.get(card);
-  const plannedDiceDisplays = plannedDice?.map((plannedDice) => (
+  const plannedDiceDisplays = plannedDice?.map((planned) => (
     <div
-      key={`planned-dice-${plannedDice.dice.id}`}
+      key={`planned-dice-${planned.dice.id}`}
       style={{
         position: "absolute",
         zIndex: 1,
         transform: "translate(-50%, -50%)",
-        left: `${plannedDice.pos.x * 100}%`,
-        top: `${plannedDice.pos.y * 100}%`,
+        left: `${planned.pos.x * 100}%`,
+        top: `${planned.pos.y * 100}%`,
       }}
     >
-      <DiceDisplay dice={plannedDice.dice} />
+      <DiceDisplay dice={planned.dice} />
     </div>
   ));
 
