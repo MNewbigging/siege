@@ -153,11 +153,24 @@ export class GameState {
   }
 
   isDicePlanned(dice: Dice) {
-    for (const [plannedCard, plannedDice] of this.pendingDicePlan) {
+    for (const [_, plannedDice] of this.pendingDicePlan) {
       if (plannedDice.find((planned) => planned.dice.id === dice.id))
         return true;
     }
     return false;
+  }
+
+  unplanDice(dice: Dice) {
+    for (const [plannedCard, plannedDice] of this.pendingDicePlan) {
+      const remainingDice = plannedDice.filter(
+        (planned) => planned.dice.id !== dice.id,
+      );
+      if (remainingDice.length === plannedDice.length) continue;
+      if (remainingDice.length)
+        this.pendingDicePlan.set(plannedCard, remainingDice);
+      else this.pendingDicePlan.delete(plannedCard);
+      eventUpdater.fire("planned-dice-update");
+    }
   }
 
   getColumnIndex(card: BattlefieldCard) {

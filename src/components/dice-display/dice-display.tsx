@@ -21,6 +21,9 @@ export function DiceDisplay({ dice, shadow }: DiceDisplayProps) {
     if (isValidSelection) {
       selection?.onSelect(dice);
     }
+    if (shadow) {
+      gameState.unplanDice(dice);
+    }
   }
 
   function handleDragStart(event: React.DragEvent<HTMLDivElement>) {
