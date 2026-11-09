@@ -177,11 +177,19 @@ export class GameState {
     const column = this.battlefield.find((cards) => cards.includes(card));
     if (!column) return false;
 
-    const cardIndex = column.indexOf(card);
-    
     // All positions before the card must be undefined
+    const cardIndex = column.indexOf(card);
     for (let i = 0; i < cardIndex; i++) {
       if (column[i] !== undefined) return false;
+    }
+
+    // And planned dice spend must match/exceed card defeat requirements
+    const plannedDice = this.pendingDicePlan.get(card);
+    if (!plannedDice) return false;
+
+    if (isTroopCard(card)) {
+      // Check magic req in toDefeatB first; remove lowest number possible (of total magic value, not total dice)
+      // Then check strength req in toDefeatA; as long as 1 strength die and total of all remaining die matches value
     }
 
     return true;

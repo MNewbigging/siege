@@ -9,6 +9,32 @@
   justify-content: center;
   align-items: center;
   gap: 5px;
+
+  &.glow-success {
+    animation: glow-success 2s ease-out;
+  }
+
+  &.glow-failure {
+    animation: glow-failure 2s ease-out;
+  }
+}
+
+@keyframes glow-success {
+  0% {
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.8), inset 0 0 20px rgba(0, 255, 0, 0.4);
+  }
+  100% {
+    box-shadow: 0 0 0px rgba(0, 255, 0, 0);
+  }
+}
+
+@keyframes glow-failure {
+  0% {
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.8), inset 0 0 20px rgba(255, 0, 0, 0.4);
+  }
+  100% {
+    box-shadow: 0 0 0px rgba(255, 0, 0, 0);
+  }
 }
 
 .card-thumb {
