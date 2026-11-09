@@ -140,11 +140,17 @@ export function ItemDragProvider({ children }: PropsWithChildren) {
         if (!activeDrag?.isDragging || activeDrag.item.type !== item.type)
           return false;
 
-        return item.type === "dice"
-          ? activeDrag.item.type === "dice" &&
-              activeDrag.item.dice.id === item.dice.id
-          : activeDrag.item.type === "card" &&
-              activeDrag.item.card === item.card;
+        // We have to compare the given item type AND the active drag item type...
+        switch (activeDrag.item.type) {
+          case "dice":
+            return (
+              item.type === "dice" && activeDrag.item.dice.id === item.dice.id
+            );
+          case "card":
+            return item.type === "card" && activeDrag.item.card === item.card;
+          default:
+            return false;
+        }
       },
       startDrag,
       registerDropTarget,
@@ -155,24 +161,50 @@ export function ItemDragProvider({ children }: PropsWithChildren) {
   return (
     <ItemDragContext.Provider value={contextValue}>
       {children}
-      {activeDrag?.isDragging &&
-        (activeDrag.item.type === "dice" ? (
-          <div
-            className={`dice-display ${activeDrag.item.dice.type} dice-drag-preview`}
-            style={{ left: activeDrag.x, top: activeDrag.y }}
-          >
-            {activeDrag.item.dice.value}
-          </div>
-        ) : (
-          <div
-            className="card-drag-preview"
-            style={{ left: activeDrag.x, top: activeDrag.y }}
-          >
-            {activeDrag.item.card.name}
-          </div>
-        ))}
+      {activeDrag?.isDragging && (
+        <DragPreview item={activeDrag.item} x={activeDrag.x} y={activeDrag.y} />
+      )}
     </ItemDragContext.Provider>
   );
+}
+
+interface DragPreviewProps {
+  x: number;
+  y: number;
+}
+
+function DiceDragPreview({ dice, x, y }: DragPreviewProps & { dice: Dice }) {
+  return (
+    <div
+      className={`dice-display ${dice.type} dice-drag-preview`}
+      style={{ left: x, top: y }}
+    >
+      {dice.value}
+    </div>
+  );
+}
+
+function CardDragPreview({
+  card,
+  x,
+  y,
+}: DragPreviewProps & { card: BattlefieldCard }) {
+  return (
+    <div className="card-drag-preview" style={{ left: x, top: y }}>
+      {card.name}
+    </div>
+  );
+}
+
+function DragPreview({ item, x, y }: { item: DragItem; x: number; y: number }) {
+  switch (item.type) {
+    case "dice":
+      return <DiceDragPreview dice={item.dice} x={x} y={y} />;
+    case "card":
+      return <CardDragPreview card={item.card} x={x} y={y} />;
+    default:
+      return null;
+  }
 }
 
 export function useItemDrag() {

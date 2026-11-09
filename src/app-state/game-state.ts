@@ -149,8 +149,6 @@ export class GameState {
     plannedDice.push({ dice, pos });
     this.pendingDicePlan.set(card, plannedDice);
 
-    console.log("dropped dice on card", this.pendingDicePlan);
-
     eventUpdater.fire("planned-dice-update");
   }
 
