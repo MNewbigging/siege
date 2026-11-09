@@ -25,14 +25,12 @@ export function Tower({ turret }: TowerProps) {
 
   return (
     <div className={classes.join(" ")} onClick={onClick}>
-      <div className="top-area">
+      <div className="tower-row">
         <DamageMarker hasFlame={turret.flames >= 1} />
         <DamageMarker hasFlame={turret.flames >= 2} />
-      </div>
-      <div className="champion-area">
-        <DamageMarker hasFlame={turret.flames >= 3} />
-      </div>
-      <div className="bot-area">
+        <div className="champion-area">
+          <DamageMarker hasFlame={turret.flames >= 3} />
+        </div>
         <DamageMarker hasFlame={turret.flames >= 4} />
       </div>
     </div>
