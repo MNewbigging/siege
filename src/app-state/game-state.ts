@@ -173,6 +173,20 @@ export class GameState {
     }
   }
 
+  canCardBeDefeated(card: BattlefieldCard) {
+    const column = this.battlefield.find((cards) => cards.includes(card));
+    if (!column) return false;
+
+    const cardIndex = column.indexOf(card);
+    
+    // All positions before the card must be undefined
+    for (let i = 0; i < cardIndex; i++) {
+      if (column[i] !== undefined) return false;
+    }
+
+    return true;
+  }
+
   defeatCard(card: BattlefieldCard) {
     const column = this.battlefield.find((cards) => cards.includes(card));
     if (!column || this.roundStage !== RoundStage.D_Action) return;
