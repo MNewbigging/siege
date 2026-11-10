@@ -21,28 +21,98 @@
 
   .body {
     position: relative;
-    flex: 2 1 100%;
+    flex: 1 0 auto;
     padding-bottom: 5px;
     display: flex;
-    gap: 10px;
+    gap: 6px;
+    min-height: min-content;
 
     .dice-reqs {
-      flex: 0 0 26px;
+      flex: 0 1 50%;
+      min-width: 64px;
       display: flex;
       flex-direction: column;
-      justify-content: end;
+      gap: 4px;
     }
 
     .name {
       flex: 2 1 auto;
+      min-width: 0;
+      overflow-wrap: anywhere;
       display: flex;
       justify-content: right;
       align-items: end;
     }
   }
 
+  .dice-req-zone {
+    --zone-color: #b94a48;
+    --zone-background: #fff1ef;
+    flex: 1 0 auto;
+    min-height: 64px;
+    padding: 4px;
+    border: 1px dashed var(--zone-color);
+    border-radius: 3px;
+    background: var(--zone-background);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    &.holy {
+      --zone-color: #16848b;
+      --zone-background: #eafafa;
+    }
+
+    &.complete {
+      border-style: solid;
+      box-shadow: inset 3px 0 var(--zone-color);
+    }
+
+    &.accepting {
+      outline: 2px solid var(--zone-color);
+      outline-offset: -2px;
+    }
+
+    &.rejecting {
+      opacity: 0.45;
+    }
+
+    .zone-heading {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 2px 6px;
+      font-size: 11px;
+      line-height: 1.2;
+      font-weight: bold;
+      color: var(--zone-color);
+    }
+
+    .zone-total {
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .zone-dice {
+      display: flex;
+      flex: 1 0 auto;
+      min-height: 24px;
+      align-content: flex-start;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 3px;
+    }
+
+    .dice-display {
+      flex: 0 0 24px;
+      width: 24px;
+      height: 24px;
+      font-size: 13px;
+    }
+  }
+
   .effect-bar {
-    flex: 1 1 auto;
+    flex: 0 0 auto;
     padding: 2px;
     width: 100%;
     background: lightgoldenrodyellow;

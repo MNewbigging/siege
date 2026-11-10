@@ -1,9 +1,8 @@
 import { useEffect, useRef } from "react";
 import type { TroopCard } from "../../app-state/types";
-import { RoundStage } from "../../app-state/types";
+import { AttackType, RoundStage } from "../../app-state/types";
 import { DiceDisplay } from "../dice-display/dice-display";
 import { useItemDrag } from "../item-drag-context";
-import { DiceReq } from "../dice-req/dice-req";
 import { useGameState } from "../game-state-context";
 import { useEventUpdater } from "../hooks/use-event-updater";
 import { TokensDisplay } from "../tokens-display/tokens-display";
@@ -17,22 +16,13 @@ export function TroopCard({ card }: TroopCardProps) {
   useEventUpdater("troop-update", "planned-dice-update");
 
   const gameState = useGameState();
-  const cardElement = useRef<HTMLDivElement>(null);
-  const { isActiveDragItem, registerDropTarget, startDrag } = useItemDrag();
+  const { isActiveDragItem, startDrag } = useItemDrag();
   const isValidChoice =
     gameState.pendingTroopSelection?.validChoices.includes(card);
 
-  useEffect(() => {
-    const element = cardElement.current;
-    if (!element) return;
-    return registerDropTarget(element, (item, pos) => {
-      if (item.type === "dice")
-        gameState.dropDiceOnCard(item.dice.id, pos, card);
-    });
-  }, [card, gameState, registerDropTarget]);
-
   function handlePointerDown(event: React.PointerEvent<HTMLDivElement>) {
     if (gameState.roundStage !== RoundStage.D_Action) return;
+    if ((event.target as HTMLElement).closest(".dice-display")) return;
     startDrag({ type: "card", card }, event);
   }
 
@@ -48,41 +38,17 @@ export function TroopCard({ card }: TroopCardProps) {
     isActiveDragItem({ type: "card", card }) ? "dragging-source" : "",
   ];
 
-  const plannedDice = gameState.pendingDicePlan.get(card);
-  const plannedDiceDisplays = plannedDice?.map((planned) => (
-    <div
-      key={`planned-dice-${planned.dice.id}`}
-      style={{
-        position: "absolute",
-        zIndex: 1,
-        transform: "translate(-50%, -50%)",
-        left: `${planned.pos.x * 100}%`,
-        top: `${planned.pos.y * 100}%`,
-      }}
-    >
-      <DiceDisplay dice={planned.dice} />
-    </div>
-  ));
-
   return (
     <div
-      ref={cardElement}
       className={classes.join(" ")}
       onClick={onClick}
       onPointerDown={handlePointerDown}
     >
-      {plannedDiceDisplays}
       <div className="body">
         <div className="dice-reqs">
-          <DiceReq
-            type={card.diceToDefeatA.type}
-            value={card.diceToDefeatA.value}
-          />
+          <DiceReqZone card={card} requirement={card.diceToDefeatA} />
           {card.diceToDefeatB && (
-            <DiceReq
-              type={card.diceToDefeatB.type}
-              value={card.diceToDefeatB.value}
-            />
+            <DiceReqZone card={card} requirement={card.diceToDefeatB} />
           )}
         </div>
         {(card.magicTokens || card.strengthTokens) && (
@@ -94,6 +60,76 @@ export function TroopCard({ card }: TroopCardProps) {
         <div className="name">{card.name}</div>
       </div>
       <div className="effect-bar">{card.effect}</div>
+    </div>
+  );
+}
+
+interface DiceReqZoneProps {
+  card: TroopCard;
+  requirement: TroopCard["diceToDefeatA"];
+}
+
+function DiceReqZone({ card, requirement }: DiceReqZoneProps) {
+  const gameState = useGameState();
+  const zoneElement = useRef<HTMLDivElement>(null);
+  const { activeDrag, registerDropTarget } = useItemDrag();
+  const { type, value } = requirement;
+  const plannedDice = (gameState.pendingDicePlan.get(card) ?? []).filter(
+    (planned) => (planned.requirementType ?? AttackType.Strength) === type,
+  );
+  const total = plannedDice.reduce(
+    (sum, planned) => sum + planned.dice.value,
+    0,
+  );
+  const hasRequiredType = plannedDice.some(
+    (planned) => planned.dice.type === type,
+  );
+  const isComplete = total >= value && hasRequiredType;
+  const draggedDice =
+    activeDrag?.isDragging && activeDrag.item.type === "dice"
+      ? activeDrag.item.dice
+      : undefined;
+  const canAcceptDice =
+    type === AttackType.Strength || draggedDice?.type === AttackType.Holy;
+
+  useEffect(() => {
+    const element = zoneElement.current;
+    if (!element) return;
+    return registerDropTarget(element, (item, pos) => {
+      if (item.type !== "dice") return;
+      gameState.dropDiceOnCard(item.dice.id, pos, card, type);
+    });
+  }, [card, gameState, registerDropTarget, type]);
+
+  const classes = [
+    "dice-req-zone",
+    type,
+    isComplete ? "complete" : "",
+    draggedDice ? (canAcceptDice ? "accepting" : "rejecting") : "",
+  ];
+
+  return (
+    <div
+      ref={zoneElement}
+      className={classes.join(" ")}
+      aria-label={`${type} requirement: ${total} of ${value}`}
+      title={
+        type === AttackType.Strength && !hasRequiredType
+          ? "Requires at least one strength die"
+          : `${type} requirement: ${total} / ${value}`
+      }
+    >
+      <div className="zone-heading">
+        <span>{type === AttackType.Holy ? "Holy" : "Strength"}</span>
+        <span className="zone-total">
+          {total} / {value}
+        </span>
+      </div>
+      <div className="zone-dice">
+        {plannedDice.map((planned) => (
+          <DiceDisplay key={planned.dice.id} dice={planned.dice} />
+        ))}
+      </div>
     </div>
   );
 }

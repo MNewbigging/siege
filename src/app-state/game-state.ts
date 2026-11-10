@@ -37,6 +37,7 @@ import {
 interface PlannedDice {
   dice: Dice;
   pos: { x: number; y: number };
+  requirementType?: AttackType;
 }
 
 export class GameState {
@@ -123,10 +124,13 @@ export class GameState {
     diceId: string,
     pos: { x: number; y: number },
     card: BattlefieldCard,
+    requirementType?: AttackType,
   ) {
     // Get the dice
     const dice = this.activeDice.find((die) => diceId === die.id);
     if (!dice) return;
+    if (requirementType === AttackType.Holy && dice.type !== AttackType.Holy)
+      return;
 
     // This dice might be moving from another card
     for (const [plannedCard, plannedDice] of this.pendingDicePlan) {
@@ -146,7 +150,7 @@ export class GameState {
 
     // Update new card with dropped dice
     const plannedDice = this.pendingDicePlan.get(card) ?? [];
-    plannedDice.push({ dice, pos });
+    plannedDice.push({ dice, pos, requirementType });
     this.pendingDicePlan.set(card, plannedDice);
 
     eventUpdater.fire("planned-dice-update");
